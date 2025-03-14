@@ -1,0 +1,86 @@
+.home-container {
+    position: relative;
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    
+  }
+  
+  .background-image {
+    background-image: url("https://tropicaldmc.com/wp-content/uploads/2017/01/Destination-Wedding-Planner-TCI-006.jpg");
+    background-size: cover;
+    background-position: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+  }
+  
+  .overlay {
+    text-align: center;
+    color: white;
+    padding: 50px;
+    transform: translateX(50px);
+  }
+  
+  .heading {
+    font-size: 2em;
+    margin-bottom: 20px;
+  }
+  
+  .search-box {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  
+  .search-input {
+    padding: 10px;
+    font-size: 1.2em;
+    border: none;
+    outline: none;
+    width: 400px;
+    border-radius: 5px;
+  }
+  
+  .search-button {
+    padding: 10px;
+    background-color: white;
+    color: black;
+    font-size: 1.2em;
+    border: none;
+    cursor: pointer;
+    border-radius: 0 5px 5px 0;
+  }
+  
+  .dropdown-menu {
+    display: flex;
+    justify-content: center;
+    width: 82.5%;
+    margin: auto;
+  }
+  
+  .dropdown-column {
+    text-align: left;
+  }
+  
+  .dropdown-column h3 {
+    margin-bottom: 10px;
+  }
+  
+  .dropdown-column ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .dropdown-column ul li {
+    margin-bottom: 5px;
+  }
+  
+.center-div{
+  left: 50%;
+  transform: translate(-50%);
+}

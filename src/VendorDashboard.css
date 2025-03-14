@@ -1,0 +1,176 @@
+.bodyVendorDashboard {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.containerVendorDashboard {
+    display: flex;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    height: 100vh;
+    width: 800vh;
+}
+
+.sidebarVendorDashboard {
+    background-color: #333;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 200px;
+    color: white;
+}
+
+.profilePhotoContainerVendorDashboard {
+    cursor: pointer;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.profilePhotoContainerVendorDashboard img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #007bff;
+}
+
+.h3ClassVendorDashboard {
+    margin: 0;
+    color: white;
+}
+
+.sidebarVendorDashboard button {
+    background-color: transparent;
+    border: none;
+    color: white;
+    padding: 10px 0;
+    width: 100%;
+    cursor: pointer;
+    text-align: left;
+}
+
+.sidebarVendorDashboard button:hover {
+    background-color: #444;
+}
+
+.contentVendorDashboard {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.sectionVendorDashboard {
+    margin: 20px 0;
+}
+
+.formGroupVendorDashboard {
+    margin-bottom: 15px;
+}
+
+.formGroupVendorDashboard label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.formGroupVendorDashboard input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+}
+
+.buttonsVendorDashboard {
+    display: flex;
+    justify-content: space-between;
+}
+
+.cancelVendorDashboard,
+.updateVendorDashboard {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.cancelVendorDashboard {
+    background-color: #dc3545;
+    color: white;
+}
+
+.cancelVendorDashboard:hover {
+    background-color: #c82333;
+}
+
+.updateVendorDashboard {
+    background-color: #28a745;
+    color: white;
+}
+
+.updateVendorDashboard:hover {
+    background-color: #218838;
+}
+
+.servicesListVendorDashboard {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.serviceCardVendorDashboard {
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px;
+    width: calc(33% - 20px);
+}
+
+.orderCardsContainerVendorDashboard {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.orderCardVendorDashboard {
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px;
+    width: calc(33% - 20px);
+}
+
+
+.is-verified-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .is-verified-button.verified {
+    background-color: #28a745; /* Green for Verified */
+    color: white;
+  }
+  
+  .is-verified-button.not-verified {
+    background-color: #dc3545; /* Red for Not Verified */
+    color: white;
+  }
+
+  .emailDisplay {
+    border: 1px solid #ccc; /* Same as input border */
+    padding: 8px; /* Same padding as input */
+    background-color: #f9f9f9; /* Light background */
+    border-radius: 4px; /* Rounded corners */
+    cursor: not-allowed; /* Change cursor to indicate it's untouchable */
+    color: #333; /* Text color */
+    /* Add any other styles to match your theme */
+}

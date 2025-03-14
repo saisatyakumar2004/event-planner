@@ -1,0 +1,97 @@
+.register-container {
+    display: flex;
+    height: 600px;
+    width: 800px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-left: auto;
+    margin-right: auto; /* Center horizontally on larger screens */
+}
+
+/* For small devices (mobile), reduce margin to fit the screen */
+@media (max-width: 600px) {
+    .register-container {
+        width: 90%; /* Adjust the width to be smaller */
+        margin-left: 10px; /* Add a small left margin */
+    }
+}
+
+/* For medium devices (tablets), adjust the margin */
+@media (max-width: 900px) {
+    .register-container {
+        width: 80%; /* Adjust the width to fit tablets */
+        margin-left: 20px; /* Increase margin slightly */
+    }
+}
+
+/* For large devices (desktops), keep the larger margins */
+@media (min-width: 900px) {
+    .register-container {
+        width: 800px; /* Use the original width */
+        margin-left: 20%; /* Add space on larger screens */
+    }
+}
+
+.left-side {
+    flex: 1;
+    padding: 20px;
+}
+
+.right-side {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.landscape-image {
+    max-width: 100%;
+    height: auto; /* Ensure the image scales properly */
+}
+
+.form-group {
+    margin-bottom: 20px; /* Spacing between form fields */
+}
+
+.input-field {
+    width: 100%; /* Make the input field take full width */
+    padding: 10px; /* Padding inside input */
+    border: 1px solid #ccc; /* Border style */
+    border-radius: 5px; /* Rounded corners */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Shadow effect */
+    transition: border-color 0.3s; /* Smooth transition for border color */
+}
+
+.input-field:focus {
+    border-color: #007bff; /* Change border color on focus */
+    outline: none; /* Remove default outline */
+}
+
+.submit-button {
+    width: 100%; /* Match button width with input */
+    padding: 10px; /* Padding for button */
+    background-color: #800080; /* Button background color */
+    color: #fff; /* Button text color */
+    border: none; /* Remove border */
+    border-radius: 5px; /* Rounded corners for button */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s; /* Smooth transition for background */
+}
+
+.submit-button:hover {
+    background-color: #5b005b; /* Darken background on hover */
+}
+
+.message {
+    color: red; /* Message color */
+    margin-top: 10px; /* Spacing above message */
+}
+
+.success-message {
+    color: green; /* Change color for success message */
+    font-weight: bold; /* Make the text bold */
+    margin-bottom: 20px; /* Space below the message */
+}
+

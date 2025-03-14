@@ -1,0 +1,221 @@
+.bodyProfile {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+.containerProfile {
+    display: flex;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 800px;
+    height: 500px;
+}
+.sidebarProfile {
+    background-color: #333;
+    padding: 20px;
+    border-radius: 10px 0 0 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 200px;
+    color: white;
+}
+.sidebarProfile img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+.sidebarProfile h3 {
+    margin: 10px 0;
+}
+.sidebarProfile button {
+    background-color: transparent;
+    border: none;
+    color: white;
+    padding: 10px 0;
+    width: 100%;
+    cursor: pointer;
+    text-align: left;
+}
+.sidebarProfile button:hover {
+    background-color: #444;
+}
+.contentProfile {
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.contentProfile h2 {
+    margin-bottom: 20px;
+}
+.formGroupProfile {
+    margin-bottom: 15px;
+}
+.formGroupProfile label {
+    display: block;
+    margin-bottom: 5px;
+}
+.formGroupProfile input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+.buttonsProfile {
+    display: flex;
+    justify-content: flex-end;
+}
+.buttonsProfile button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+.buttonsProfile button.updateProfile {
+    background-color: #333;
+    color: white;
+}
+.buttonsProfile button.cancelProfile {
+    background-color: #ccc;
+    color: black;
+}
+
+
+.h3ClassProfile{
+    color: white;
+}
+
+/* Extra CSS for Order Cards */
+
+/* Container for all order cards */
+.orderCardsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+/* Individual order card styling */
+.orderCard {
+    background-color: #f7f7f7;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Upper section of order card */
+.orderCardUpper {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+/* Lower section of order card */
+.orderCardLower {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Button styling */
+.orderButton {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Requested order button */
+.orderButton.requested {
+    background-color: #ff9800;
+    color: white;
+}
+
+/* Accepted order button */
+.orderButton.accepted {
+    background-color: #4caf50;
+    color: white;
+}
+
+/* Card text alignment */
+.orderCardLeft, .orderCardRight {
+    flex: 1;
+}
+
+/* Right-aligned text in card */
+.orderCardRight {
+    text-align: right;
+}
+
+
+#orderHistoryProfile {
+    max-height: 500px; /* Set a maximum height for the order history section */
+    overflow-y: auto;  /* Enable vertical scrolling if content exceeds the max height */
+    padding: 20px;     /* Optional padding for aesthetics */
+    border: 1px solid #ccc; /* Optional border for visual separation */
+    border-radius: 8px; /* Optional rounded corners */
+}
+
+.orderCardsContainer {
+    display: flex;      /* Use flexbox for alignment */
+    flex-direction: column; /* Stack cards vertically */
+}
+
+.orderCard {
+    background-color: #f9f9f9; /* Card background color */
+    margin: 10px 0;  /* Space between cards */
+    padding: 15px;    /* Inner padding */
+    border: 1px solid #e0e0e0; /* Card border */
+    border-radius: 4px; /* Rounded corners for cards */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional shadow for depth */
+}
+
+.orderCardUpper, .orderCardLower {
+    display: flex; /* Use flexbox for layout */
+    justify-content: space-between; /* Space out elements */
+    align-items: center; /* Center align items */
+}
+
+.orderButton {
+    padding: 5px 10px; /* Button padding */
+    border: none; /* Remove default border */
+    border-radius: 4px; /* Rounded corners for button */
+    cursor: pointer; /* Pointer cursor for button */
+}
+
+.orderButton.accepted {
+    background-color: #4caf50; /* Green background for accepted */
+    color: white; /* White text */
+}
+
+.orderButton.requested {
+    background-color: #ff9800; /* Orange background for requested */
+    color: white; /* White text */
+}
+
+
+.cancelOrderButton {
+    background-color: #ff4d4d; /* Red color for cancel */
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    margin-left: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.cancelOrderButton:hover {
+    background-color: #ff1a1a; /* Darker red on hover */
+}

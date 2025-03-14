@@ -1,0 +1,99 @@
+/* General body style for the EventHome component */
+bodyHome {
+    position: relative;
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Header styles for EventHome */
+.headerHome {
+    background-color: bisque;
+    font-family: 'Dancing Script', cursive;
+    text-align: center;
+    font-size: 30px;
+    padding: 10px;
+}
+
+/* Card container styles for EventHome */
+.cardContainerHome {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin: 20px 0;
+    flex-wrap: wrap;
+}
+
+/* Card styles for EventHome */
+.cardHome {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 250px;
+    padding: 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    animation: fadeInHome 1s ease-in;
+    background: linear-gradient(145deg, #ffffff, #f0f0f0);
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
+    color: inherit;
+    transition: all 0.3s ease;
+}
+
+.cardHome:hover {
+    background-color: #e0e0e0;
+    transform: scale(1.05);
+}
+
+/* Circle image wrapper for EventHome */
+.circleHome {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #ddd;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.circleHome img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+/* Profile link styles for EventHome */
+.profileLinkHome {
+    position: absolute;
+    top: 10px;
+    right: 30px;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.profileLinkHome img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin: 0;
+}
+
+.profileLinkHome span {
+    margin-left: 8px;
+    color: #000;
+    font-size: 16px;
+}
+
+/* Animation for fadeIn */
+@keyframes fadeInHome {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}

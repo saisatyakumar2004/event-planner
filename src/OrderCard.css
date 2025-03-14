@@ -1,0 +1,127 @@
+.orderCard {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px 0;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    align-items: center; /* Centers content horizontally */
+}
+
+.orderCardSection {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    width: 100%; /* Ensures sections take full width */
+}
+
+.orderCardLabel {
+    font-weight: bold;
+}
+
+.orderCardValue {
+    margin-left: 10px;
+}
+
+.orderActions {
+    display: flex;
+    justify-content: center; /* Centers buttons horizontally */
+    align-items: center;    /* Centers buttons vertically */
+    gap: 20px;             /* Adds spacing between buttons */
+    margin-top: 10px;      /* Adds margin at the top */
+}
+
+.rejectButton, .acceptButton, .detailsButton {
+    padding: 10px;
+    border: none;
+    margin: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100px;
+    text-align: center;
+}
+
+.rejectButton {
+    background-color: #f44336; /* Red */
+    color: white;
+}
+
+.acceptButton {
+    background-color: #4CAF50; /* Green */
+    color: white;
+}
+
+.detailsButton {
+    background-color: #008CBA; /* Blue */
+    color: white;
+}
+
+.rejectButton:hover, .acceptButton:hover, .detailsButton:hover {
+    opacity: 0.8;
+}
+
+/* Modal Styling */
+.modalOverlay {
+    display: flex;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modalContent {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: left;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 40%;
+    max-width: 500px;
+}
+
+.modalHeader {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.modalSection {
+    margin-bottom: 10px;
+}
+
+.modalLabel {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.modalValue {
+    margin-left: 10px;
+}
+
+.closeButton {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-top: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    display: block;
+    width: 100px;
+    text-align: center;
+    margin: 0 auto;
+}
+
+.closeButton:hover {
+    opacity: 0.8;
+}

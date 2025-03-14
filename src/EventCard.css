@@ -1,0 +1,86 @@
+/* EventCard.css */
+
+.event-card-link {
+  text-decoration: none; /* Remove underline */
+  color: inherit; /* Inherit color from parent */
+}
+
+/* Keep hover color unchanged */
+.event-card-link:hover {
+  color: inherit;
+}
+
+.event-card {
+  width: 300px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  background-color: #fff;
+  cursor: pointer;
+  border: 1px solid #ddd;
+  transition: transform 0.2s;
+}
+
+/* Hover effect for card scaling */
+.event-card:hover {
+  transform: scale(1.05);
+}
+
+/* Image container styling */
+.image-container {
+  position: relative;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  overflow: hidden;
+}
+
+/* Ensuring image fits the container */
+.event-image {
+  width: 100%;
+  height: auto;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+/* Event details padding */
+.event-details {
+  padding: 10px;
+}
+
+/* Header alignment */
+.event-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Rating alignment */
+.event-rating {
+  display: flex;
+  align-items: center;
+}
+
+/* Star icon styling */
+.star-icon {
+  color: #ffcc00; /* Yellow star */
+  margin-right: 5px;
+}
+
+/* Location container */
+.event-location {
+  display: flex;
+  align-items: center;
+  margin-top: 5px;
+}
+
+/* Map marker icon styling */
+.location-icon {
+  color: #ff6666; /* Red map marker */
+  margin-right: 5px;
+}
+
+/* Title styling (h3) */
+.event-card h3 {
+  margin: 0;
+  font-size: 1.2em;
+}
