@@ -178,4 +178,39 @@ router.post('/verify', (req, res) => {
     }
 });
 
+
+
+
+
+// Route to send booking confirmation email to vendor with client details
+router.post('/send-booking-confirmation', async (req, res) => {
+    const { email, eventDetails, vendor, client } = req.body;
+  
+    if (!email || !eventDetails || !vendor || !client) {
+      return res.status(400).json({ success: false, msg: 'Email, event details, vendor details, and client details are required' });
+    }
+  
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email, // Send email to vendor
+      subject: 'New Booking Confirmation',
+      text: `You have a new booking for ${vendor.title}!\n\nClient Details:\nName: ${client.name}\nEmail: ${client.email}\nPhone: ${client.phone}\n\nEvent Details:\nDate: ${eventDetails.eventDate}\nTime: ${eventDetails.eventTime}\nLocation: ${eventDetails.eventLocation}\nSpecial Instructions: ${eventDetails.specialInstructions}\n\nPlease check your event planner site for more details: http://youreventplanner.com/events`, // Add link to event planner site
+    };
+  
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error('Error sending email:', error);
+        return res.status(500).json({ success: false, msg: 'Error sending booking confirmation email', error: error.message });
+      }
+      console.log('Email sent:', info.response);
+      res.status(200).json({ success: true, msg: 'Booking confirmation email sent successfully' });
+    });
+  });
+
+
+
+
+
+
+  
 module.exports = router;
