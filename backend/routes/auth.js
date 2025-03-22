@@ -61,19 +61,37 @@ router.post('/reset-passworduser', async (req, res) => {
 
 // Register User
 router.post('/register', async (req, res) => {
-    const { email, password } = req.body;
-    try {
-        const userExists = await User.findOne({ email });
-        if (userExists) return res.status(400).json({ msg: 'User already exists' });
+    console.log('Incoming Request Body:', req.body); // Log the request body
 
+    const { email, password, firstName, lastName, phoneNumber } = req.body;
+
+    try {
+        // Check if user already exists
+        const userExists = await User.findOne({ email });
+        if (userExists) {
+            return res.status(400).json({ message: 'User already exists' });
+        }
+
+        // Hash the password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        const user = new User({ email, password: hashedPassword });
+        // Create a new user
+        const user = new User({
+            email,
+            password: hashedPassword,
+            firstName,
+            lastName,
+            phoneNumber
+        });
+
+        // Save the user to the database
         await user.save();
-        res.status(201).json({ msg: 'User registered successfully' });
+
+        res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {
-        res.status(500).json({ msg: 'Server error' });
+        console.error('Backend Error:', error); // Log the backend error
+        res.status(500).json({ message: 'Server error' });
     }
 });
 

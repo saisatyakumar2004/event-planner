@@ -1,5 +1,7 @@
+
 const express = require('express');
 const Order = require('../models/Order'); // Adjust the path as necessary
+const axios = require('axios'); // Add axios to make HTTP requests
 
 // Function to define the accept order logic
 const orderVendorRoutes = (app) => {
@@ -26,17 +28,20 @@ const orderVendorRoutes = (app) => {
         { $set: { accepted: true } }
       );
 
+      // Send email to customer using the /send-order-status route in otp.js
+      await axios.post('http://localhost:5000/api/otp/send-order-status', {
+        email: order.customer_email,
+        orderId: order.order_id,
+        status: 'accepted',
+      });
+
       console.log('Update Result:', result); // Log the update result
       return res.status(200).send('Order accepted.');
-      //res.send(`Order ${orderId} accepted successfully.`);
-      //return res.status(200).send('Order accepted.');
     } catch (error) {
       console.error(error); // Log the error for debugging
       res.status(500).send('An error occurred while updating the order.');
     }
   });
-
-
 
   app.put('/api/order-vendor/reject/:orderId', async (req, res) => {
     const { orderId } = req.params;
@@ -50,21 +55,26 @@ const orderVendorRoutes = (app) => {
         return res.status(404).send('Order not found.');
       }
 
-      // Check if the order is already accepted
-      if (!order.accepted) {
+      // Check if the order is already rejected
+      if (order.rejected) {
         return res.status(400).send('Order already rejected.');
       }
 
       // Update the accepted field to false for the given order ID
       const result = await Order.updateOne(
         { order_id: orderId },
-        { $set: { accepted: false } }
+        { $set: { rejected: true } }
       );
+
+      // Send email to customer using the /send-order-status route in otp.js
+      await axios.post('http://localhost:5000/api/otp/send-order-status', {
+        email: order.customer_email,
+        orderId: order.order_id,
+        status: 'rejected',
+      });
 
       console.log('Update Result:', result); // Log the update result
       return res.status(200).send('Order rejected.');
-      //res.send(`Order ${orderId} accepted successfully.`);
-      //return res.status(200).send('Order accepted.');
     } catch (error) {
       console.error(error); // Log the error for debugging
       res.status(500).send('An error occurred while updating the order.');

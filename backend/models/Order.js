@@ -8,6 +8,7 @@ const OrderSchema = new mongoose.Schema({
   item_price: { type: String, required: true },
   item_image_url: { type: String, required: true },
   accepted: { type: Boolean, default: false },
+  rejected: { type: Boolean, default: false },
   eventDetails: {
     eventDate: { type: String, required: true },
     eventTime: { type: String, required: true },

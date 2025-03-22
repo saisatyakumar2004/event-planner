@@ -247,31 +247,51 @@ const Profile = () => {
                         </div>
                     )}
                     {section === 'orders' && (
-    <div id="orderHistoryProfile">
-    <h2>Order History</h2>
-    <div className="orderCardsContainer">
-        {orderDetails && orderDetails.length > 0 ? (
-            orderDetails.map((order) => (
-                <div key={order.order_id} className="orderCard">
-                    <div className="orderCardUpper">
-                        <span className="orderCardLeft">Order ID: {order.order_id}</span>
-                        <span className="orderCardRight">Total: ₹{order.item_price}</span>
-                    </div>
-                    <div className="orderCardLower">
-                        <span className="orderCardLeft">Item: {order.item_name}</span>
-                        <button
-                            className={`orderButton ${
-                                order.accepted ? 'accepted' : 'requested'
+                             <div id="orderHistoryProfile">
+                                      <h2>Order History</h2>
+                                 <div className="orderCardsContainer">
+                                    {orderDetails && orderDetails.length > 0 ? (
+                                      orderDetails.map((order) => (
+                                     <div key={order.order_id} className="orderCard">
+                                     <div className="orderCardUpper">
+                                     <span className="orderCardLeft">Order ID: {order.order_id}</span>
+                                    <span className="orderCardRight">Total: ₹{order.item_price}</span>
+                                </div>
+                             <div className="orderCardLower">
+                                  <span className="orderCardLeft">Item: {order.item_name}</span>
+                                  
+                             {/* <button
+                                className={`orderButton ${
+                                 order.accepted ? 'accepted' : 'requested'
                             }`}
                         >
                             {order.accepted ? 'Accepted' : 'Requested'}
+                            {order.rejected ? 'Rejected' : 'Requested'}
                         </button>
                         <button
                             className="cancelOrderButton"
                             onClick={() => handleCancelOrder(order.order_id)}
                         >
                             Cancel Order
-                        </button>
+                        </button> */}
+                         <button
+                                className={`orderButton ${
+                                    order.accepted ? 'accepted' : order.rejected ? 'rejected' : 'requested'
+                                }`}
+                            >
+                                {order.accepted ? 'Order Accepted' : order.rejected ? 'Order Rejected' : 'Requested'}
+                            </button>
+                           
+                                <button
+                                    className="cancelOrderButton"
+                                    onClick={() => handleCancelOrder(order.order_id)}
+                                >
+                                    Cancel Order
+                                </button>
+                            
+
+
+
                     </div>
                 </div>
             ))

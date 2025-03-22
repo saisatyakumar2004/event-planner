@@ -148,6 +148,10 @@
     background-color: #4caf50;
     color: white;
 }
+.orderButton.rejected {
+    background-color: hsl(14, 83%, 50%);
+    color: white;
+}
 
 /* Card text alignment */
 .orderCardLeft, .orderCardRight {
