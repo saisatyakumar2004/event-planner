@@ -87,7 +87,7 @@ router.get('/venues', async (req, res) => {
     try {
         // Fetch all venues with category 'venue'
         const venues = await Product.find({ category: 'venue' });
-        console.log(venues);
+        // console.log(venues);
         if (venues.length === 0) {
             return res.status(404).json({ message: 'No venues found' });
         }
