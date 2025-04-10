@@ -49,7 +49,7 @@
 //             };
     
 //             try {
-//                 const response = await axios.post('http://localhost:5000/api/product/add', newProduct); // Updated endpoint
+//                 const response = await axios.post('https://event-planner-y4fw.onrender.com/api/product/add', newProduct); // Updated endpoint
 //                 if (response.status === 201) { // Check for status 201 (Created)
 //                     alert('Product added successfully!');
 //                     // Clear the form fields after successful upload
@@ -82,7 +82,7 @@
 
 //         const fetchUserData = async () => {
 //             try {
-//                 const response = await axios.get(`http://localhost:5000/api/vendor?vendor_email=${userData.vendor_email}`);
+//                 const response = await axios.get(`https://event-planner-y4fw.onrender.com/api/vendor?vendor_email=${userData.vendor_email}`);
 //                 const { name, vendor_email, phone, isVerified } = response.data;
 //                 setName(name);
 //                 setEmail(vendor_email);
@@ -99,7 +99,7 @@
 //     useEffect(() => {
 //         const fetchOrders = async () => {
 //             try {
-//                 const response = await axios.get('http://localhost:5000/api/orders/fetchOrders');
+//                 const response = await axios.get('https://event-planner-y4fw.onrender.com/api/orders/fetchOrders');
 //                 const vendorOrders = response.data.filter(order => order.vendor_email === vendor_email);
 //                 setOrders(vendorOrders);
 //             } catch (error) {
@@ -115,7 +115,7 @@
 //     const updateProfile = async () => {
 //         const updatedVendor = { name, vendor_email, phone, isVerified };
 //         try {
-//             const response = await fetch('http://localhost:5000/api/vendor/updateProfile', {
+//             const response = await fetch('https://event-planner-y4fw.onrender.com/api/vendor/updateProfile', {
 //                 method: 'POST',
 //                 headers: {
 //                     'Content-Type': 'application/json',
@@ -147,7 +147,7 @@
 //             return;
 //         }
 
-//         const response = await fetch('http://localhost:5000/api/vendor/updatePassword', {
+//         const response = await fetch('https://event-planner-y4fw.onrender.com/api/vendor/updatePassword', {
 //             method: 'POST',
 //             headers: {
 //                 'Content-Type': 'application/json',
@@ -194,7 +194,7 @@
 //         useEffect(() => {
 //             const fetchVendorData = async () => {
 //                 try {
-//                     const response = await fetch(`http://localhost:5000/api/vendor?vendor_email=${vendor_email}`);
+//                     const response = await fetch(`https://event-planner-y4fw.onrender.com/api/vendor?vendor_email=${vendor_email}`);
 //                     const data = await response.json();
 
 //                     if (data) {
@@ -430,7 +430,7 @@ const VendorDashboard = () => {
         };
 
         try {
-            const response = await axios.post('http://localhost:5000/api/product/add', newProduct); // Updated endpoint
+            const response = await axios.post('https://event-planner-y4fw.onrender.com/api/product/add', newProduct); // Updated endpoint
             if (response.status === 201) { // Check for status 201 (Created)
                 alert('Product added successfully!');
                 // Clear the form fields after successful upload
@@ -461,7 +461,7 @@ const VendorDashboard = () => {
 
         const fetchUserData = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/api/vendor?vendor_email=${userData.vendor_email}`);
+                const response = await axios.get(`https://event-planner-y4fw.onrender.com/api/vendor?vendor_email=${userData.vendor_email}`);
                 const { name, vendor_email, phone, isVerified } = response.data;
                 setName(name);
                 setEmail(vendor_email);
@@ -478,7 +478,7 @@ const VendorDashboard = () => {
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/orders/fetchOrders');
+                const response = await axios.get('https://event-planner-y4fw.onrender.com/api/orders/fetchOrders');
                 const vendorOrders = response.data.filter(order => order.vendor_email === vendor_email);
                 setOrders(vendorOrders);
             } catch (error) {
@@ -494,7 +494,7 @@ const VendorDashboard = () => {
     const updateProfile = async () => {
         const updatedVendor = { name, vendor_email, phone, isVerified };
         try {
-            const response = await fetch('http://localhost:5000/api/vendor/updateProfile', {
+            const response = await fetch('https://event-planner-y4fw.onrender.com/api/vendor/updateProfile', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -526,7 +526,7 @@ const VendorDashboard = () => {
             return;
         }
 
-        const response = await fetch('http://localhost:5000/api/vendor/updatePassword', {
+        const response = await fetch('https://event-planner-y4fw.onrender.com/api/vendor/updatePassword', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -573,7 +573,7 @@ const VendorDashboard = () => {
         useEffect(() => {
             const fetchVendorData = async () => {
                 try {
-                    const response = await fetch(`http://localhost:5000/api/vendor?vendor_email=${vendor_email}`);
+                    const response = await fetch(`https://event-planner-y4fw.onrender.com/api/vendor?vendor_email=${vendor_email}`);
                     const data = await response.json();
 
                     if (data) {

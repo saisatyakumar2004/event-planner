@@ -15,7 +15,7 @@ const VenueDetail = () => {
   useEffect(() => {
     const fetchVenues = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/product/venues'); // Fetch all venues
+        const response = await axios.get('https://event-planner-y4fw.onrender.com/api/product/venues'); // Fetch all venues
         console.log(response.data);
         setVenues(response.data); // Store the array of venues
       } catch (error) {
@@ -59,7 +59,7 @@ const VenueDetail = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:5000/api/orders/addOrder', {
+      const response = await fetch('https://event-planner-y4fw.onrender.com/api/orders/addOrder', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -72,7 +72,7 @@ const VenueDetail = () => {
         const orderId = orderData.order.order_id; // Adjust this based on your response structure
 
         // Update user's order history
-        const userUpdateResponse = await fetch(`http://localhost:5000/api/user/updateOrderHistory`, {
+        const userUpdateResponse = await fetch(`https://event-planner-y4fw.onrender.com/api/user/updateOrderHistory`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',

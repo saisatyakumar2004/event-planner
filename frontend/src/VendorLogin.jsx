@@ -12,7 +12,7 @@
 //     const handleSubmit = async (e) => {
 //         e.preventDefault();
 //         try {
-//             const { data } = await axios.post('http://localhost:5000/api/vendorauth/login', {
+//             const { data } = await axios.post('https://event-planner-y4fw.onrender.com/api/vendorauth/login', {
 //                 vendor_email,
 //                 password,
 //             });
@@ -94,7 +94,7 @@ const VendorLogin = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const { data } = await axios.post('http://localhost:5000/api/vendorauth/login', {
+            const { data } = await axios.post('https://event-planner-y4fw.onrender.com/api/vendorauth/login', {
                 vendor_email,
                 password,
             });

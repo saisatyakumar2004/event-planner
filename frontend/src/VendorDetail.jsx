@@ -20,7 +20,7 @@
 //     // Function to fetch data from MongoDB
 //     const fetchData = async () => {
 //       try {
-//         const response = await fetch('http://localhost:5000/api/product/products'); // Fetch from API
+//         const response = await fetch('https://event-planner-y4fw.onrender.com/api/product/products'); // Fetch from API
 //         const data = await response.json();
         
 //         let vendorData = [];
@@ -70,7 +70,7 @@
 //     };
 
 //     try {
-//       const response = await fetch('http://localhost:5000/api/orders/addOrder', {
+//       const response = await fetch('https://event-planner-y4fw.onrender.com/api/orders/addOrder', {
 //         method: 'POST',
 //         headers: {
 //           'Content-Type': 'application/json',
@@ -83,7 +83,7 @@
 //         const orderId = orderData.order.order_id; // Adjust this based on your response structure
 
 //         // Update user's order history
-//         const userUpdateResponse = await fetch('http://localhost:5000/api/user/updateOrderHistory', {
+//         const userUpdateResponse = await fetch('https://event-planner-y4fw.onrender.com/api/user/updateOrderHistory', {
 //           method: 'PUT',
 //           headers: {
 //             'Content-Type': 'application/json',
@@ -228,7 +228,7 @@ const VendorDetail = () => {
     // Function to fetch data from MongoDB
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/product/products'); // Fetch from API
+        const response = await fetch('https://event-planner-y4fw.onrender.com/api/product/products'); // Fetch from API
         const data = await response.json();
         
         let vendorData = [];
@@ -268,7 +268,7 @@ const VendorDetail = () => {
 
   const sendBookingConfirmationEmail = async (vendorEmail, eventDetails, vendor, client) => {
     try {
-      const response = await fetch('http://localhost:5000/api/otp/send-booking-confirmation', {
+      const response = await fetch('https://event-planner-y4fw.onrender.com/api/otp/send-booking-confirmation', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -304,7 +304,7 @@ const VendorDetail = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:5000/api/orders/addOrder', {
+      const response = await fetch('https://event-planner-y4fw.onrender.com/api/orders/addOrder', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -317,7 +317,7 @@ const VendorDetail = () => {
         const orderId = orderData.order.order_id; // Adjust this based on your response structure
 
         // Update user's order history
-        const userUpdateResponse = await fetch('http://localhost:5000/api/user/updateOrderHistory', {
+        const userUpdateResponse = await fetch('https://event-planner-y4fw.onrender.com/api/user/updateOrderHistory', {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',

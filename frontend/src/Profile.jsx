@@ -17,7 +17,7 @@ const Profile = () => {
     const handleCancelOrder = async (orderId) => {
         try {
             // Make the API call to delete the order
-            const response = await fetch(`http://localhost:5000/api/orders/deleteOrder/${orderId}`, {
+            const response = await fetch(`https://event-planner-y4fw.onrender.com/api/orders/deleteOrder/${orderId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -55,7 +55,7 @@ const Profile = () => {
         // Fetch user data from the backend using the email
         const fetchUserData = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/api/user?email=${userData.email}`);
+                const response = await axios.get(`https://event-planner-y4fw.onrender.com/api/user?email=${userData.email}`);
                 const { firstName, lastName, phoneNumber, orderHistory } = response.data;
                 setFirstName(firstName);
                 setLastName(lastName);
@@ -63,7 +63,7 @@ const Profile = () => {
                 setPhoneNumber(phoneNumber);
                 setOrderHistory(orderHistory || []); // Set order history
                 if (orderHistory && orderHistory.length > 0) {
-                    const ordersResponse = await axios.post('http://localhost:5000/api/orders/fetchOrdersByIds', {
+                    const ordersResponse = await axios.post('https://event-planner-y4fw.onrender.com/api/orders/fetchOrdersByIds', {
                         orderIds: orderHistory,
                     });
                     setOrderDetails(ordersResponse.data);
@@ -79,7 +79,7 @@ const Profile = () => {
     const updateProfile = async () => {
         const updatedUser = { firstName, lastName, email, phoneNumber };
         try {
-            const response = await fetch('http://localhost:5000/api/user/updateProfile', {
+            const response = await fetch('https://event-planner-y4fw.onrender.com/api/user/updateProfile', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -111,7 +111,7 @@ const Profile = () => {
             return;
         }
 
-        const response = await fetch('http://localhost:5000/api/user/updatePassword', {
+        const response = await fetch('https://event-planner-y4fw.onrender.com/api/user/updatePassword', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

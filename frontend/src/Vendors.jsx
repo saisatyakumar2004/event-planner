@@ -13,7 +13,7 @@ const Vendors = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch('http://localhost:5000/api/product/products'); // Adjust the API endpoint as necessary
+                const response = await fetch('https://event-planner-y4fw.onrender.com/api/product/products'); // Adjust the API endpoint as necessary
                 const data = await response.json();
 
                 // Assuming the data structure contains WeddingCakeData, PhotographerData, and MakeupData

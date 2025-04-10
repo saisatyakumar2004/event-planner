@@ -18,7 +18,7 @@
 //     // Step 1: Send OTP to the email
 //     const sendOtp = async () => {
 //         try {
-//             const response = await axios.post('http://localhost:5000/api/otp/generate', { email });
+//             const response = await axios.post('https://event-planner-y4fw.onrender.com/api/otp/generate', { email });
 //             if (response.data.success) {
 //                 setIsOtpSent(true);
 //                 setMessage('OTP sent to your email address.');
@@ -33,7 +33,7 @@
 //     // Step 2: Verify the OTP
 //     const verifyOtp = async () => {
 //         try {
-//             const response = await axios.post('http://localhost:5000/api/otp/verify', { email, otp });
+//             const response = await axios.post('https://event-planner-y4fw.onrender.com/api/otp/verify', { email, otp });
 //             if (response.data.success) {
 //                 setIsOtpVerified(true);
 //                 setMessage('OTP verified successfully! Please complete the registration.');
@@ -64,7 +64,7 @@
 //         console.log('Request Body:', requestBody); // Log the request body
 
 //         try {
-//             const response = await axios.post('http://localhost:5000/api/auth/register', requestBody);
+//             const response = await axios.post('https://event-planner-y4fw.onrender.com/api/auth/register', requestBody);
 //             setMessage(response.data.message);
 //             setIsRegistered(true);
 //             navigate('/login'); // Navigate to login page after successful registration
@@ -326,7 +326,7 @@ const Register = () => {
     // Step 1: Send OTP to the email
     const sendOtp = async () => {
         try {
-            const response = await axios.post('http://localhost:5000/api/otp/generate', { email });
+            const response = await axios.post('https://event-planner-y4fw.onrender.com/api/otp/generate', { email });
             if (response.data.success) {
                 setIsOtpSent(true);
                 setMessage('OTP sent to your email address.');
@@ -341,7 +341,7 @@ const Register = () => {
     // Step 2: Verify the OTP
     const verifyOtp = async () => {
         try {
-            const response = await axios.post('http://localhost:5000/api/otp/verify', { email, otp });
+            const response = await axios.post('https://event-planner-y4fw.onrender.com/api/otp/verify', { email, otp });
             if (response.data.success) {
                 setIsOtpVerified(true);
                 setMessage('OTP verified successfully! Please complete the registration.');
@@ -372,7 +372,7 @@ const Register = () => {
         console.log('Request Body:', requestBody); // Log the request body
 
         try {
-            const response = await axios.post('http://localhost:5000/api/auth/register', requestBody);
+            const response = await axios.post('https://event-planner-y4fw.onrender.com/api/auth/register', requestBody);
             setMessage(response.data.message);
             setIsRegistered(true);
             navigate('/login'); // Navigate to login page after successful registration
