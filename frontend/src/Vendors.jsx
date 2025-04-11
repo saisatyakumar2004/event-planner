@@ -67,8 +67,8 @@ const Vendors = () => {
                 <a href="#mehndi-section" className="vendor-card mehndi">
                     <img src="https://tinyurl.com/mehndi-event-planner" alt="Mehndi" />
                     <div className="details">
-                        <div className="title">Mehndi</div>
-                        <div className="services">Mehndi Artist</div>
+                        <div className="title">Mehandi</div>
+                        <div className="services">Mehandi Artist</div>
                     </div>
                 </a>
 
@@ -156,7 +156,7 @@ const Vendors = () => {
             <br />
             {/* Mehndi Section */}
             <div id="mehndi-section" className="photographer-section">
-                <h2 className="left-align">Mehndi</h2>
+                <h2 className="left-align">Mehandi</h2>
                 <p className="left-align">Showing {mehndiData.length} results as per your criteria</p>
 
                 <div className="photographer-grid">

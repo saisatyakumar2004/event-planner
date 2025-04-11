@@ -383,6 +383,10 @@
 
 // export default VendorDashboard;
 
+
+
+
+
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import OrderCard from './OrderCard'; // Import the OrderCard component
@@ -864,7 +868,7 @@ const VendorDashboard = () => {
                             </div>
                         </div>
                     )}
-                    {section === 'upload' && (
+                    {/* {section === 'upload' && (
                         <div style={{ margin: '20px 0' }}>
                             <h2>Upload a New Product</h2>
                             <div style={{ marginBottom: '15px' }}>
@@ -880,7 +884,33 @@ const VendorDashboard = () => {
                                         border: '1px solid #ced4da',
                                         borderRadius: '5px'
                                     }}
-                                />
+                                /> */}
+                                {section === 'upload' && (
+    <div style={{ margin: '20px 0' }}>
+        <h2>Upload a New Product</h2>
+        <div style={{ marginBottom: '15px' }}>
+            <label style={{ display: 'block', marginBottom: '5px' }} htmlFor="category">Category</label>
+            <select
+                id="category"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                style={{
+                    width: '100%',
+                    padding: '10px',
+                    border: '1px solid #ced4da',
+                    borderRadius: '5px'
+                }}
+            >
+                <option value="">Select a category</option>
+                <option value="wedding-cake">Wedding Cake</option>
+                <option value="photographers">Photographers</option>
+                <option value="makeup">Makeup</option>
+                <option value="mehndi">Mehandi</option>
+                <option value="bridal_wear">Bridal Wear</option>
+                <option value="groom_wear">Groom Wear</option>
+                <option value="venue">Venue</option>
+            </select>
+        
                             </div>
                             <div style={{ marginBottom: '15px' }}>
                                 <label style={{ display: 'block', marginBottom: '5px' }} htmlFor="title">Title</label>

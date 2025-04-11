@@ -1,447 +1,4 @@
-// // import React, { useEffect, useState } from 'react';
-// // import { useParams, useNavigate } from 'react-router-dom';
-// // import './VendorDetail.css'; // Import the same CSS styles
 
-// // const VendorDetail = () => {
-// //   const navigate = useNavigate();
-// //   const user = JSON.parse(localStorage.getItem('user')); // Get user from localStorage
-// //   const { category, id } = useParams(); // Get both category and id from URL params
-// //   const [vendor, setVendor] = useState(null); // State to hold the vendor data
-// //   const [loading, setLoading] = useState(true); // State to manage loading
-// //   const [showModal, setShowModal] = useState(false); // State to manage modal visibility
-// //   const [eventDetails, setEventDetails] = useState({
-// //     eventDate: '',
-// //     eventTime: '',
-// //     eventLocation: '',
-// //     specialInstructions: '',
-// //   });
-
-// //   useEffect(() => {
-// //     // Function to fetch data from MongoDB
-// //     const fetchData = async () => {
-// //       try {
-// //         const response = await fetch('https://event-planner-y4fw.onrender.com/api/product/products'); // Fetch from API
-// //         const data = await response.json();
-        
-// //         let vendorData = [];
-// //         if (category === 'wedding-cake') {
-// //           vendorData = Array.isArray(data.WeddingCakeData) ? data.WeddingCakeData : [];
-// //         }if (category === 'photographers') {
-// //           vendorData = Array.isArray(data.PhotographerData) ? data.PhotographerData : [];
-// //         }
-
-// //         const foundVendor = vendorData.find((v) => v.product_id === id); // Match product ID
-// //         setVendor(foundVendor);
-// //       } catch (error) {
-// //         console.error('Error fetching vendor data:', error);
-// //       } finally {
-// //         setLoading(false); // Stop loading after data is fetched
-// //       }
-// //     };
-
-// //     fetchData();
-// //   }, [category, id]);
-
-// //   const handleBookNow = () => {
-// //     if (!user) {
-// //       navigate('/login'); // Redirect to login if user is not authenticated
-// //       return;
-// //     }
-// //     setShowModal(true); // Show the modal
-// //   };
-
-// //   const handleInputChange = (e) => {
-// //     const { name, value } = e.target;
-// //     setEventDetails({
-// //       ...eventDetails,
-// //       [name]: value,
-// //     });
-// //   };
-
-// //   const handleSubmit = async () => {
-// //     const orderDetails = {
-// //       customer_email: user.email,
-// //       vendor_email: vendor.vendor_email || 'vendor@gmail.com', // Fallback email
-// //       item_name: vendor.title,
-// //       item_price: vendor.price,
-// //       item_image_url: vendor.image_url,
-// //       accepted: false,
-// //       eventDetails, // Include event details in the order
-// //     };
-
-// //     try {
-// //       const response = await fetch('https://event-planner-y4fw.onrender.com/api/orders/addOrder', {
-// //         method: 'POST',
-// //         headers: {
-// //           'Content-Type': 'application/json',
-// //         },
-// //         body: JSON.stringify(orderDetails),
-// //       });
-
-// //       if (response.ok) {
-// //         const orderData = await response.json(); // Get the order data including the generated order ID
-// //         const orderId = orderData.order.order_id; // Adjust this based on your response structure
-
-// //         // Update user's order history
-// //         const userUpdateResponse = await fetch('https://event-planner-y4fw.onrender.com/api/user/updateOrderHistory', {
-// //           method: 'PUT',
-// //           headers: {
-// //             'Content-Type': 'application/json',
-// //           },
-// //           body: JSON.stringify({ email: user.email, orderId }), // Send email and order ID to update
-// //         });
-
-// //         if (userUpdateResponse.ok) {
-// //           alert("Order Placed Successfully!");
-// //           navigate('/profile'); // Redirect to profile after updating order history
-// //         } else {
-// //           console.error('Error updating order history:', await userUpdateResponse.json());
-// //         }
-// //       } else {
-// //         const errorData = await response.json();
-// //         console.error('Error adding order:', errorData.message || response.statusText);
-// //       }
-// //     } catch (error) {
-// //       console.error('Error:', error);
-// //     } finally {
-// //       setShowModal(false); // Close the modal after submission
-// //     }
-// //   };
-
-// //   if (loading) {
-// //     return <h2>Loading...</h2>; // Display loading message while fetching
-// //   }
-
-// //   if (!vendor) {
-// //     return <h2>Vendor Not Found</h2>; // Display a message if vendor is not found
-// //   }
-
-// //   return (
-// //     <div className="vendor-detail-container">
-// //       <div className="image-price-section">
-// //         <div className="image-section">
-// //           <img src={vendor.image_url} alt={vendor.title} />
-// //         </div>
-// //         <div className="price-card">
-// //           <h3 className="h3Class">Starting Price</h3>
-// //           <p>Total Price: {vendor.price ? `INR ${vendor.price}` : 'Price not available'}</p>
-// //           <p className="special-deal">Special deal!!</p>
-// //         </div>
-// //       </div>
-// //       <div className="details-card">
-// //         <h2>{vendor.title}</h2>
-// //         <p>{vendor.location}</p>
-// //         <div className="rating-section">
-// //           <span>{vendor.ratings} ⭐</span>
-// //         </div>
-// //         <div className="button-group">
-// //           <button className="wishlist-button">❤️ Wishlist</button>
-// //           <button className="book-button" onClick={handleBookNow}>Book Now</button>
-// //         </div>
-// //       </div>
-
-// //       {showModal && (
-// //   <div className="modal-overlay">
-// //     <div className="modal-content">
-// //       <h2>Enter Event Details</h2>
-// //       <form>
-// //         <label>
-// //           Event Date:
-// //           <input
-// //             type="date"
-// //             name="eventDate"
-// //             value={eventDetails.eventDate}
-// //             onChange={handleInputChange}
-// //             required
-// //           />
-// //         </label>
-// //         <label>
-// //           Event Time:
-// //           <input
-// //             type="time"
-// //             name="eventTime"
-// //             value={eventDetails.eventTime}
-// //             onChange={handleInputChange}
-// //             required
-// //           />
-// //         </label>
-// //         <label>
-// //           Event Location:
-// //           <input
-// //             type="text"
-// //             name="eventLocation"
-// //             value={eventDetails.eventLocation}
-// //             onChange={handleInputChange}
-// //             required
-// //           />
-// //         </label>
-// //         <label>
-// //           Special Instructions:
-// //           <textarea
-// //             name="specialInstructions"
-// //             value={eventDetails.specialInstructions}
-// //             onChange={handleInputChange}
-// //           />
-// //         </label>
-// //         <div className="modal-buttons">
-// //           <button type="button" onClick={() => setShowModal(false)}>
-// //             Cancel
-// //           </button>
-// //           <button type="button" onClick={handleSubmit}>
-// //             Submit
-// //           </button>
-// //         </div>
-// //       </form>
-// //     </div>
-// //   </div>
-// // )}
-// //     </div>
-// //   );
-// // };
-
-// // export default VendorDetail;
-
-
-
-
-
-
-// import React, { useEffect, useState } from 'react';
-// import { useParams, useNavigate } from 'react-router-dom';
-// import './VendorDetail.css';
-
-// const VendorDetail = () => {
-//   const navigate = useNavigate();
-//   const user = JSON.parse(localStorage.getItem('user')); // Get user from localStorage
-//   const { category, id } = useParams(); // Get both category and id from URL params
-//   const [vendor, setVendor] = useState(null); // State to hold the vendor data
-//   const [loading, setLoading] = useState(true); // State to manage loading
-//   const [showModal, setShowModal] = useState(false); // State to manage modal visibility
-//   const [eventDetails, setEventDetails] = useState({
-//     eventDate: '',
-//     eventTime: '',
-//     eventLocation: '',
-//     specialInstructions: '',
-//   });
-
-//   useEffect(() => {
-//     // Function to fetch data from MongoDB
-//     const fetchData = async () => {
-//       try {
-//         const response = await fetch('https://event-planner-y4fw.onrender.com/api/product/products'); // Fetch from API
-//         const data = await response.json();
-        
-//         let vendorData = [];
-//         if (category === 'wedding-cake') {
-//           vendorData = Array.isArray(data.WeddingCakeData) ? data.WeddingCakeData : [];
-//         } else if (category === 'photographers') {
-//           vendorData = Array.isArray(data.PhotographerData) ? data.PhotographerData : [];
-//         }
-
-//         const foundVendor = vendorData.find((v) => v.product_id === id); // Match product ID
-//         setVendor(foundVendor);
-//       } catch (error) {
-//         console.error('Error fetching vendor data:', error);
-//       } finally {
-//         setLoading(false); // Stop loading after data is fetched
-//       }
-//     };
-
-//     fetchData();
-//   }, [category, id]);
-
-//   const handleBookNow = () => {
-//     if (!user) {
-//       navigate('/login'); // Redirect to login if user is not authenticated
-//       return;
-//     }
-//     setShowModal(true); // Show the modal
-//   };
-
-//   const handleInputChange = (e) => {
-//     const { name, value } = e.target;
-//     setEventDetails({
-//       ...eventDetails,
-//       [name]: value,
-//     });
-//   };
-
-//   const sendBookingConfirmationEmail = async (vendorEmail, eventDetails, vendor, client) => {
-//     try {
-//       const response = await fetch('https://event-planner-y4fw.onrender.com/api/otp/send-booking-confirmation', {
-//         method: 'POST',
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify({
-//           email: vendorEmail, // Send email to vendor
-//           eventDetails,
-//           vendor,
-//           client, // Include client details
-//         }),
-//       });
-
-//       if (!response.ok) {
-//         throw new Error('Failed to send booking confirmation email');
-//       }
-
-//       const data = await response.json();
-//       console.log(data.msg); // Log success message
-//     } catch (error) {
-//       console.error('Error sending booking confirmation email:', error);
-//     }
-//   };
-
-//   const handleSubmit = async () => {
-//     const orderDetails = {
-//       customer_email: user.email,
-//       vendor_email: vendor.vendor_email || 'vendor@gmail.com', // Fallback email
-//       item_name: vendor.title,
-//       item_price: vendor.price,
-//       item_image_url: vendor.image_url,
-//       accepted: false,
-//       eventDetails, // Include event details in the order
-//     };
-
-//     try {
-//       const response = await fetch('https://event-planner-y4fw.onrender.com/api/orders/addOrder', {
-//         method: 'POST',
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify(orderDetails),
-//       });
-
-//       if (response.ok) {
-//         const orderData = await response.json(); // Get the order data including the generated order ID
-//         const orderId = orderData.order.order_id; // Adjust this based on your response structure
-
-//         // Update user's order history
-//         const userUpdateResponse = await fetch('https://event-planner-y4fw.onrender.com/api/user/updateOrderHistory', {
-//           method: 'PUT',
-//           headers: {
-//             'Content-Type': 'application/json',
-//           },
-//           body: JSON.stringify({ email: user.email, orderId }), // Send email and order ID to update
-//         });
-
-//         if (userUpdateResponse.ok) {
-//           // Send booking confirmation email to vendor with client details
-//           const client = {
-//             name: user.name, // Assuming the user's name is stored in localStorage
-//             email: user.email,
-//             phone: user.phone, // Assuming the user's phone is stored in localStorage
-//           };
-//           await sendBookingConfirmationEmail(vendor.vendor_email, eventDetails, vendor, client);
-
-//           alert("Order Placed Successfully!");
-//           navigate('/profile'); // Redirect to profile after updating order history
-//         } else {
-//           console.error('Error updating order history:', await userUpdateResponse.json());
-//         }
-//       } else {
-//         const errorData = await response.json();
-//         console.error('Error adding order:', errorData.message || response.statusText);
-//       }
-//     } catch (error) {
-//       console.error('Error:', error);
-//     } finally {
-//       setShowModal(false); // Close the modal after submission
-//     }
-//   };
-
-//   if (loading) {
-//     return <h2>Loading...</h2>; // Display loading message while fetching
-//   }
-
-//   if (!vendor) {
-//     return <h2>Vendor Not Found</h2>; // Display a message if vendor is not found
-//   }
-
-//   return (
-//     <div className="vendor-detail-container">
-//       <div className="image-price-section">
-//         <div className="image-section">
-//           <img src={vendor.image_url} alt={vendor.title} />
-//         </div>
-//         <div className="price-card">
-//           <h3 className="h3Class">Starting Price</h3>
-//           <p>Total Price: {vendor.price ? `INR ${vendor.price}` : 'Price not available'}</p>
-//           <p className="special-deal">Special deal!!</p>
-//         </div>
-//       </div>
-//       <div className="details-card">
-//         <h2>{vendor.title}</h2>
-//         <p>{vendor.location}</p>
-//         <div className="rating-section">
-//           <span>{vendor.ratings} ⭐</span>
-//         </div>
-//         <div className="button-group">
-//           <button className="wishlist-button">❤️ Wishlist</button>
-//           <button className="book-button" onClick={handleBookNow}>Book Now</button>
-//         </div>
-//       </div>
-
-//       {showModal && (
-//         <div className="modal-overlay">
-//           <div className="modal-content">
-//             <h2>Enter Event Details</h2>
-//             <form>
-//               <label>
-//                 Event Date:
-//                 <input
-//                   type="date"
-//                   name="eventDate"
-//                   value={eventDetails.eventDate}
-//                   onChange={handleInputChange}
-//                   required
-//                 />
-//               </label>
-//               <label>
-//                 Event Time:
-//                 <input
-//                   type="time"
-//                   name="eventTime"
-//                   value={eventDetails.eventTime}
-//                   onChange={handleInputChange}
-//                   required
-//                 />
-//               </label>
-//               <label>
-//                 Event Location:
-//                 <input
-//                   type="text"
-//                   name="eventLocation"
-//                   value={eventDetails.eventLocation}
-//                   onChange={handleInputChange}
-//                   required
-//                 />
-//               </label>
-//               <label>
-//                 Special Instructions:
-//                 <textarea
-//                   name="specialInstructions"
-//                   value={eventDetails.specialInstructions}
-//                   onChange={handleInputChange}
-//                 />
-//               </label>
-//               <div className="modal-buttons">
-//                 <button type="button" onClick={() => setShowModal(false)}>
-//                   Cancel
-//                 </button>
-//                 <button type="button" onClick={handleSubmit}>
-//                   Submit
-//                 </button>
-//               </div>
-//             </form>
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default VendorDetail;
 
 
 
@@ -456,6 +13,13 @@ const VendorDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [reviews, setReviews] = useState([]);
+  const [reviewInput, setReviewInput] = useState({
+    orderId: '',
+    rating: 5,
+    comment: ''
+  });
   const [eventDetails, setEventDetails] = useState({
     eventDate: '',
     eventTime: '',
@@ -475,12 +39,31 @@ const VendorDetail = () => {
         } else if (category === 'photographers') {
           vendorData = Array.isArray(data.PhotographerData) ? data.PhotographerData : [];
         }
+        else if (category === 'makeup') {
+          vendorData = Array.isArray(data.MakeupData) ? data.MakeupData : [];
+        }
+        else if (category === 'bridal_wear') {
+          vendorData = Array.isArray(data.BridalWearData) ? data.BridalWearData : [];
+        }
+        else if (category === 'mehndi') {
+          vendorData = Array.isArray(data.MehndiData) ? data.MehndiData : [];
+        }   
+        else if (category === 'groom_wear') {
+          vendorData = Array.isArray(data.GroomWearData) ? data.GroomWearData : [];
+        }        
 
         const foundVendor = vendorData.find((v) => v.product_id === id);
         if (!foundVendor) {
           setError('Vendor not found');
         }
         setVendor(foundVendor);
+
+        // Fetch reviews for this product
+        const reviewsResponse = await fetch(`https://event-planner-y4fw.onrender.com/api/reviews/${id}`);
+        if (reviewsResponse.ok) {
+          const reviewsData = await reviewsResponse.json();
+          setReviews(reviewsData.reviews || []);
+        }
       } catch (error) {
         console.error('Error fetching vendor data:', error);
         setError('Error loading vendor data');
@@ -507,6 +90,210 @@ const VendorDetail = () => {
       [name]: value,
     });
   };
+
+  const handleReviewInputChange = (e) => {
+    const { name, value } = e.target;
+    setReviewInput({
+      ...reviewInput,
+      [name]: value,
+    });
+  };
+
+  // const handleSubmitReview = async () => {
+  //   if (!reviewInput.orderId) {
+  //     alert('Please enter your order ID');
+  //     return;
+  //   }
+
+  //   try {
+  //     // Verify the order belongs to the user and is for this product
+  //     const orderResponse = await fetch(`https://event-planner-y4fw.onrender.com/api/orders/${reviewInput.orderId}`);
+  //     const orderData = await orderResponse.json();
+      
+  //     if (!orderResponse.ok) {
+  //       throw new Error(orderData.message || 'Order not found');
+  //     }
+
+  //     // Check if the order belongs to the current user
+  //     if (orderData.customer_email !== user.email) {
+  //       alert('This order does not belong to you');
+  //       return;
+  //     }
+
+  //     // Check if the order is for this product
+  //     if (orderData.item_name !== vendor.title) {
+  //       alert('This order is not for this product');
+  //       return;
+  //     }
+
+  //     // Check if the order has already been reviewed
+  //     const checkReviewResponse = await fetch(`https://event-planner-y4fw.onrender.com/api/reviews/check?productId=${id}&orderId=${reviewInput.orderId}`);
+  //     const checkReviewData = await checkReviewResponse.json();
+      
+  //     if (checkReviewResponse.ok && checkReviewData.exists) {
+  //       alert('You have already reviewed this order');
+  //       return;
+  //     }
+
+  //     // Submit the review
+  //     const reviewResponse = await fetch('https://event-planner-y4fw.onrender.com/api/reviews/add', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({
+  //         productId: id,
+  //         orderId: reviewInput.orderId,
+  //         userId: user.email,
+  //         userName: user.name,
+  //         rating: reviewInput.rating,
+  //         comment: reviewInput.comment,
+  //         date: new Date().toISOString()
+  //       }),
+  //     });
+
+  //     const reviewData = await reviewResponse.json();
+      
+  //     if (!reviewResponse.ok) {
+  //       throw new Error(reviewData.message || 'Failed to submit review');
+  //     }
+
+  //     // Update the local reviews state
+  //     const newReview = {
+  //       userName: user.name,
+  //       rating: reviewInput.rating,
+  //       comment: reviewInput.comment,
+  //       date: new Date().toISOString()
+  //     };
+  //     setReviews([...reviews, newReview]);
+  //     setShowReviewModal(false);
+  //     setReviewInput({
+  //       orderId: '',
+  //       rating: 5,
+  //       comment: ''
+  //     });
+  //     alert('Thank you for your review!');
+  //   } catch (error) {
+  //     console.error('Error submitting review:', error);
+  //     alert(error.message || 'Error submitting review');
+  //   }
+  // };
+
+
+
+
+
+
+  const handleSubmitReview = async () => {
+    if (!reviewInput.orderId) {
+      alert('Please enter your order ID');
+      return;
+    }
+  
+    try {
+      // 1. Verify the order exists and belongs to the user
+      const orderResponse = await fetch(`https://event-planner-y4fw.onrender.com/api/orders/${reviewInput.orderId}`);
+      
+      // First check response status
+      if (!orderResponse.ok) {
+        const errorData = await orderResponse.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Order not found or invalid order ID');
+      }
+  
+      const orderData = await orderResponse.json();
+      
+      // Verify order ownership
+      if (orderData.customer_email !== user.email) {
+        alert('This order does not belong to you');
+        return;
+      }
+  
+      // Verify product match
+      if (orderData.item_name !== vendor.title) {
+        alert('This order is not for this product');
+        return;
+      }
+  
+      // 2. Check for existing review
+      const checkReviewResponse = await fetch(
+        `https://event-planner-y4fw.onrender.com/api/reviews/check?productId=${id}&orderId=${reviewInput.orderId}`
+      );
+      
+      if (!checkReviewResponse.ok) {
+        const errorData = await checkReviewResponse.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to check review status');
+      }
+  
+      const checkReviewData = await checkReviewResponse.json();
+      
+      if (checkReviewData.exists) {
+        alert('You have already reviewed this order');
+        return;
+      }
+  
+      // 3. Submit the review
+      const reviewResponse = await fetch('https://event-planner-y4fw.onrender.com/api/reviews/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          productId: id,
+          orderId: reviewInput.orderId,
+          userId: user.email,
+          userName: user.name,
+          rating: reviewInput.rating,
+          comment: reviewInput.comment,
+          date: new Date().toISOString()
+        }),
+      });
+  
+      if (!reviewResponse.ok) {
+        const errorData = await reviewResponse.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to submit review');
+      }
+  
+      // Success case
+      const newReview = {
+        userName: user.name,
+        rating: reviewInput.rating,
+        comment: reviewInput.comment,
+        date: new Date().toISOString()
+      };
+      
+      setReviews([...reviews, newReview]);
+      setShowReviewModal(false);
+      setReviewInput({
+        orderId: '',
+        rating: 5,
+        comment: ''
+      });
+      alert('Thank you for your review!');
+  
+    } catch (error) {
+      console.error('Review submission error:', {
+        error: error.message,
+        orderId: reviewInput.orderId,
+        user: user.email,
+        product: vendor?.title
+      });
+      
+      // User-friendly error messages
+      let displayMessage = error.message;
+      
+      if (error.message.includes('Failed to fetch')) {
+        displayMessage = 'Network error - please check your connection';
+      } else if (error.message.includes('Unexpected token')) {
+        displayMessage = 'Server error - please try again later';
+      }
+      
+      alert(`Error submitting review: ${displayMessage}`);
+    }
+  };
+
+
+
+
 
   const sendBookingConfirmationEmail = async (vendorEmail, eventDetails, vendor, client) => {
     try {
@@ -554,37 +341,40 @@ const VendorDetail = () => {
         body: JSON.stringify(orderDetails),
       });
 
-      if (response.ok) {
-        const orderData = await response.json();
-        const orderId = orderData.order.order_id;
-
-        const userUpdateResponse = await fetch('https://event-planner-y4fw.onrender.com/api/user/updateOrderHistory', {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ email: user.email, orderId }),
-        });
-
-        if (userUpdateResponse.ok) {
-          const client = {
-            name: user.name,
-            email: user.email,
-            phone: user.phone,
-          };
-          await sendBookingConfirmationEmail(vendor.vendor_email, eventDetails, vendor, client);
-
-          alert("Order Placed Successfully!");
-          navigate('/profile');
-        } else {
-          console.error('Error updating order history:', await userUpdateResponse.json());
-        }
-      } else {
-        const errorData = await response.json();
-        console.error('Error adding order:', errorData.message || response.statusText);
+      const orderData = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(orderData.message || 'Failed to create order');
       }
+
+      const orderId = orderData.order.order_id;
+
+      const userUpdateResponse = await fetch('https://event-planner-y4fw.onrender.com/api/user/updateOrderHistory', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: user.email, orderId }),
+      });
+
+      if (!userUpdateResponse.ok) {
+        const errorData = await userUpdateResponse.json();
+        console.error('Error updating order history:', errorData);
+        throw new Error(errorData.message || 'Failed to update order history');
+      }
+
+      const client = {
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+      };
+      await sendBookingConfirmationEmail(vendor.vendor_email, eventDetails, vendor, client);
+
+      alert("Order Placed Successfully!");
+      navigate('/profile');
     } catch (error) {
       console.error('Error:', error);
+      alert(error.message || 'Error placing order');
     } finally {
       setShowModal(false);
     }
@@ -734,9 +524,6 @@ const VendorDetail = () => {
                   fontWeight: 'bold',
                   cursor: 'pointer',
                   transition: 'background-color 0.3s',
-                  ':hover': {
-                    backgroundColor: '#e9ecef'
-                  }
                 }}
                 onMouseOver={e => e.target.style.backgroundColor = '#e9ecef'}
                 onMouseOut={e => e.target.style.backgroundColor = '#f8f9fa'}
@@ -756,9 +543,6 @@ const VendorDetail = () => {
                   fontWeight: 'bold',
                   cursor: 'pointer',
                   transition: 'background-color 0.3s',
-                  ':hover': {
-                    backgroundColor: '#e04a50'
-                  }
                 }}
                 onMouseOver={e => e.target.style.backgroundColor = '#e04a50'}
                 onMouseOut={e => e.target.style.backgroundColor = '#ff5a5f'}
@@ -787,6 +571,117 @@ const VendorDetail = () => {
             }}>
               {vendor.description || 'No additional information available.'}
             </p>
+          </div>
+
+          {/* Reviews Section */}
+          <div style={{
+            backgroundColor: '#fff',
+            borderRadius: '8px',
+            padding: '25px',
+            boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+          }}>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '20px'
+            }}>
+              <h3 style={{
+                margin: 0,
+                color: '#333',
+                fontSize: '20px'
+              }}>Customer Reviews</h3>
+              {user && (
+                <button 
+                  onClick={() => setShowReviewModal(true)}
+                  style={{
+                    padding: '8px 16px',
+                    border: 'none',
+                    borderRadius: '4px',
+                    backgroundColor: '#007bff',
+                    color: 'white',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    transition: 'background-color 0.3s',
+                  }}
+                  onMouseOver={e => e.target.style.backgroundColor = '#0056b3'}
+                  onMouseOut={e => e.target.style.backgroundColor = '#007bff'}
+                >
+                  Write a Review
+                </button>
+              )}
+            </div>
+
+            {reviews.length === 0 ? (
+              <p style={{ color: '#666', textAlign: 'center' }}>No reviews yet. Be the first to review!</p>
+            ) : (
+              <div style={{
+                maxHeight: '400px',
+                overflowY: 'auto',
+                paddingRight: '10px'
+              }}>
+                {reviews.map((review, index) => (
+                  <div key={index} style={{
+                    borderBottom: '1px solid #eee',
+                    padding: '15px 0',
+                    ':last-child': {
+                      borderBottom: 'none'
+                    }
+                  }}>
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      marginBottom: '10px'
+                    }}>
+                      <div style={{
+                        width: '40px',
+                        height: '40px',
+                        borderRadius: '50%',
+                        backgroundColor: '#f0f0f0',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginRight: '10px',
+                        fontWeight: 'bold',
+                        color: '#333'
+                      }}>
+                        {review.userName ? review.userName.charAt(0).toUpperCase() : 'U'}
+                      </div>
+                      <div>
+                        <p style={{
+                          margin: 0,
+                          fontWeight: 'bold',
+                          color: '#333'
+                        }}>{review.userName || 'Anonymous'}</p>
+                        <div style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          marginTop: '2px'
+                        }}>
+                          <span style={{
+                            color: '#ffc107',
+                            marginRight: '5px'
+                          }}>
+                            {'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}
+                          </span>
+                          <span style={{
+                            color: '#999',
+                            fontSize: '12px'
+                          }}>
+                            {new Date(review.date).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <p style={{
+                      margin: 0,
+                      color: '#555',
+                      lineHeight: '1.5'
+                    }}>{review.comment}</p>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -952,6 +847,159 @@ const VendorDetail = () => {
                   onMouseOut={e => e.target.style.backgroundColor = '#28a745'}
                 >
                   Confirm Booking
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Review Modal */}
+      {showReviewModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            borderRadius: '8px',
+            width: '90%',
+            maxWidth: '500px',
+            padding: '25px',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
+          }}>
+            <h2 style={{
+              margin: '0 0 20px 0',
+              color: '#333',
+              textAlign: 'center'
+            }}>Write a Review</h2>
+            
+            <form>
+              <div style={{ marginBottom: '15px' }}>
+                <label style={{
+                  display: 'block',
+                  marginBottom: '5px',
+                  fontWeight: 'bold',
+                  color: '#555'
+                }}>Order ID</label>
+                <input
+                  type="text"
+                  name="orderId"
+                  value={reviewInput.orderId}
+                  onChange={handleReviewInputChange}
+                  required
+                  placeholder="Enter your order ID"
+                  style={{
+                    width: '100%',
+                    padding: '10px',
+                    border: '1px solid #ddd',
+                    borderRadius: '4px',
+                    fontSize: '16px'
+                  }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '15px' }}>
+                <label style={{
+                  display: 'block',
+                  marginBottom: '5px',
+                  fontWeight: 'bold',
+                  color: '#555'
+                }}>Rating</label>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setReviewInput({...reviewInput, rating: star})}
+                      style={{
+                        backgroundColor: 'transparent',
+                        border: 'none',
+                        fontSize: '24px',
+                        cursor: 'pointer',
+                        color: star <= reviewInput.rating ? '#ffc107' : '#ddd',
+                        padding: 0
+                      }}
+                    >
+                      ★
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{
+                  display: 'block',
+                  marginBottom: '5px',
+                  fontWeight: 'bold',
+                  color: '#555'
+                }}>Your Review</label>
+                <textarea
+                  name="comment"
+                  value={reviewInput.comment}
+                  onChange={handleReviewInputChange}
+                  required
+                  placeholder="Share your experience with this vendor..."
+                  style={{
+                    width: '100%',
+                    padding: '10px',
+                    border: '1px solid #ddd',
+                    borderRadius: '4px',
+                    fontSize: '16px',
+                    minHeight: '100px',
+                    resize: 'vertical'
+                  }}
+                />
+              </div>
+
+              <div style={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                gap: '10px'
+              }}>
+                <button
+                  type="button"
+                  onClick={() => setShowReviewModal(false)}
+                  style={{
+                    padding: '10px 20px',
+                    border: 'none',
+                    borderRadius: '4px',
+                    backgroundColor: '#6c757d',
+                    color: 'white',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    transition: 'background-color 0.3s'
+                  }}
+                  onMouseOver={e => e.target.style.backgroundColor = '#5a6268'}
+                  onMouseOut={e => e.target.style.backgroundColor = '#6c757d'}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSubmitReview}
+                  style={{
+                    padding: '10px 20px',
+                    border: 'none',
+                    borderRadius: '4px',
+                    backgroundColor: '#007bff',
+                    color: 'white',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    transition: 'background-color 0.3s'
+                  }}
+                  onMouseOver={e => e.target.style.backgroundColor = '#0056b3'}
+                  onMouseOut={e => e.target.style.backgroundColor = '#007bff'}
+                >
+                  Submit Review
                 </button>
               </div>
             </form>

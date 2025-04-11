@@ -9,7 +9,7 @@ const vendor = require('./routes/vendor');
 const orderVendorRoutes = require('./routes/order-vendor');
 const productRoutes = require('./routes/product');
 const otpRoutes = require('./routes/otp'); // Import OTP routes
-
+const reviewRoutes = require('./routes/reviews');
 require('dotenv').config();
 
 const app = express();
@@ -29,6 +29,7 @@ app.use('/api/product', productRoutes);
 app.use('/api/otp', otpRoutes); // New OTP routes
 app.use('/api/otp', otpRoutes); // Register OTP route
 
+app.use('/api/reviews', reviewRoutes);
 
 // Initialize order vendor routes
 orderVendorRoutes(app);
