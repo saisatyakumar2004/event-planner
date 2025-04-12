@@ -1,7 +1,3 @@
-
-
-
-
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
@@ -21,11 +17,18 @@ const VendorDetail = () => {
     comment: ''
   });
   const [eventDetails, setEventDetails] = useState({
+    eventName: '', // Add event name field
     eventDate: '',
     eventTime: '',
     eventLocation: '',
     specialInstructions: '',
   });
+
+  const validateDateTime = (date, time) => {
+    const now = new Date();
+    const selectedDateTime = new Date(`${date}T${time}`);
+    return selectedDateTime > now;
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,34 +38,34 @@ const VendorDetail = () => {
         
         let vendorData = [];
         if (category === 'wedding-cake') {
-          vendorData = Array.isArray(data.WeddingCakeData) ? data.WeddingCakeData : [];
+          vendorData = data.WeddingCakeData || [];
         } else if (category === 'photographers') {
-          vendorData = Array.isArray(data.PhotographerData) ? data.PhotographerData : [];
+          vendorData = data.PhotographerData || [];
+        } else if (category === 'makeup') {
+          vendorData = data.MakeupData || [];
+        } else if (category === 'bridal_wear') {
+          vendorData = data.BridalWearData || [];
+        } else if (category === 'mehndi') {
+          vendorData = data.MehndiData || [];
+        } else if (category === 'groom_wear') {
+          vendorData = data.GroomWearData || [];
         }
-        else if (category === 'makeup') {
-          vendorData = Array.isArray(data.MakeupData) ? data.MakeupData : [];
-        }
-        else if (category === 'bridal_wear') {
-          vendorData = Array.isArray(data.BridalWearData) ? data.BridalWearData : [];
-        }
-        else if (category === 'mehndi') {
-          vendorData = Array.isArray(data.MehndiData) ? data.MehndiData : [];
-        }   
-        else if (category === 'groom_wear') {
-          vendorData = Array.isArray(data.GroomWearData) ? data.GroomWearData : [];
-        }        
 
-        const foundVendor = vendorData.find((v) => v.product_id === id);
+        // Find the vendor by comparing product_id strings
+        const foundVendor = vendorData.find(v => String(v.product_id) === String(id));
+        
         if (!foundVendor) {
           setError('Vendor not found');
         }
         setVendor(foundVendor);
 
-        // Fetch reviews for this product
-        const reviewsResponse = await fetch(`https://event-planner-y4fw.onrender.com/api/reviews/${id}`);
-        if (reviewsResponse.ok) {
-          const reviewsData = await reviewsResponse.json();
-          setReviews(reviewsData.reviews || []);
+        // Only fetch reviews if we found the vendor
+        if (foundVendor) {
+          const reviewsResponse = await fetch(`https://event-planner-y4fw.onrender.com/api/reviews/${id}`);
+          if (reviewsResponse.ok) {
+            const reviewsData = await reviewsResponse.json();
+            setReviews(reviewsData.reviews || []);
+          }
         }
       } catch (error) {
         console.error('Error fetching vendor data:', error);
@@ -98,91 +101,6 @@ const VendorDetail = () => {
       [name]: value,
     });
   };
-
-  // const handleSubmitReview = async () => {
-  //   if (!reviewInput.orderId) {
-  //     alert('Please enter your order ID');
-  //     return;
-  //   }
-
-  //   try {
-  //     // Verify the order belongs to the user and is for this product
-  //     const orderResponse = await fetch(`https://event-planner-y4fw.onrender.com/api/orders/${reviewInput.orderId}`);
-  //     const orderData = await orderResponse.json();
-      
-  //     if (!orderResponse.ok) {
-  //       throw new Error(orderData.message || 'Order not found');
-  //     }
-
-  //     // Check if the order belongs to the current user
-  //     if (orderData.customer_email !== user.email) {
-  //       alert('This order does not belong to you');
-  //       return;
-  //     }
-
-  //     // Check if the order is for this product
-  //     if (orderData.item_name !== vendor.title) {
-  //       alert('This order is not for this product');
-  //       return;
-  //     }
-
-  //     // Check if the order has already been reviewed
-  //     const checkReviewResponse = await fetch(`https://event-planner-y4fw.onrender.com/api/reviews/check?productId=${id}&orderId=${reviewInput.orderId}`);
-  //     const checkReviewData = await checkReviewResponse.json();
-      
-  //     if (checkReviewResponse.ok && checkReviewData.exists) {
-  //       alert('You have already reviewed this order');
-  //       return;
-  //     }
-
-  //     // Submit the review
-  //     const reviewResponse = await fetch('https://event-planner-y4fw.onrender.com/api/reviews/add', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify({
-  //         productId: id,
-  //         orderId: reviewInput.orderId,
-  //         userId: user.email,
-  //         userName: user.name,
-  //         rating: reviewInput.rating,
-  //         comment: reviewInput.comment,
-  //         date: new Date().toISOString()
-  //       }),
-  //     });
-
-  //     const reviewData = await reviewResponse.json();
-      
-  //     if (!reviewResponse.ok) {
-  //       throw new Error(reviewData.message || 'Failed to submit review');
-  //     }
-
-  //     // Update the local reviews state
-  //     const newReview = {
-  //       userName: user.name,
-  //       rating: reviewInput.rating,
-  //       comment: reviewInput.comment,
-  //       date: new Date().toISOString()
-  //     };
-  //     setReviews([...reviews, newReview]);
-  //     setShowReviewModal(false);
-  //     setReviewInput({
-  //       orderId: '',
-  //       rating: 5,
-  //       comment: ''
-  //     });
-  //     alert('Thank you for your review!');
-  //   } catch (error) {
-  //     console.error('Error submitting review:', error);
-  //     alert(error.message || 'Error submitting review');
-  //   }
-  // };
-
-
-
-
-
 
   const handleSubmitReview = async () => {
     if (!reviewInput.orderId) {
@@ -291,10 +209,6 @@ const VendorDetail = () => {
     }
   };
 
-
-
-
-
   const sendBookingConfirmationEmail = async (vendorEmail, eventDetails, vendor, client) => {
     try {
       const response = await fetch('https://event-planner-y4fw.onrender.com/api/otp/send-booking-confirmation', {
@@ -322,6 +236,18 @@ const VendorDetail = () => {
   };
 
   const handleSubmit = async () => {
+    // Validate date and time
+    if (!validateDateTime(eventDetails.eventDate, eventDetails.eventTime)) {
+      alert('Please select a future date and time');
+      return;
+    }
+
+    // Validate event name
+    if (!eventDetails.eventName.trim()) {
+      alert('Please enter an event name');
+      return;
+    }
+
     const orderDetails = {
       customer_email: user.email,
       vendor_email: vendor.vendor_email || 'vendor@gmail.com',
@@ -721,6 +647,30 @@ const VendorDetail = () => {
                   marginBottom: '5px',
                   fontWeight: 'bold',
                   color: '#555'
+                }}>Event Name</label>
+                <input
+                  type="text"
+                  name="eventName"
+                  value={eventDetails.eventName}
+                  onChange={handleInputChange}
+                  required
+                  placeholder="Enter event name"
+                  style={{
+                    width: '100%',
+                    padding: '10px',
+                    border: '1px solid #ddd',
+                    borderRadius: '4px',
+                    fontSize: '16px'
+                  }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '15px' }}>
+                <label style={{
+                  display: 'block',
+                  marginBottom: '5px',
+                  fontWeight: 'bold',
+                  color: '#555'
                 }}>Event Date</label>
                 <input
                   type="date"
@@ -728,6 +678,7 @@ const VendorDetail = () => {
                   value={eventDetails.eventDate}
                   onChange={handleInputChange}
                   required
+                  min={new Date().toISOString().split('T')[0]}
                   style={{
                     width: '100%',
                     padding: '10px',

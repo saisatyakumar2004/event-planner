@@ -1,129 +1,3 @@
-// import React, { useState, useEffect } from 'react';
-// import { useParams, useNavigate } from 'react-router-dom';
-// import axios from 'axios'; // Import axios for API requests
-// import './VenueDetail.css';
-
-// const VenueDetail = () => {
-//   const { id } = useParams(); // Extract venue ID from URL
-//   const navigate = useNavigate();
-//   const user = JSON.parse(localStorage.getItem('user'));
-//   const [venues, setVenues] = useState([]); // State to store the fetched venue array
-//   const [venue, setVenue] = useState(null); // State to store the selected venue
-//   const [error, setError] = useState(null); // State to handle errors
-
-//   // Fetch all venues from the backend
-//   useEffect(() => {
-//     const fetchVenues = async () => {
-//       try {
-//         const response = await axios.get('https://event-planner-y4fw.onrender.com/api/product/venues'); // Fetch all venues
-//         console.log(response.data);
-//         setVenues(response.data); // Store the array of venues
-//       } catch (error) {
-//         console.error('Error fetching venues:', error);
-//         setError('Error loading venues');
-//       }
-//     };
-
-//     fetchVenues();
-//   }, []);
-
-//   // Find the specific venue by matching the id from params
-//   useEffect(() => {
-//     if (venues.length > 0) {
-//       const foundVenue = venues.find((v) => v.product_id === id); // Directly compare the id
-//       if (foundVenue) {
-//         setVenue(foundVenue); // Set the matching venue
-
-//       } else {
-//         setError('Venue not found');
-//       }
-//     }
-//   }, [venues, id]);
-
-//   if (!venue) {
-//     return <h2>{error || 'Loading venue details...'}</h2>; // Display loading or error message
-//   }
-
-//   const handleBookNow = async () => {
-//     if (!user) {
-//       navigate('/login');
-//       return;
-//     }
-//     const orderDetails = {
-//       customer_email: user.email,
-//       vendor_email: venue.vendor_email || 'vendor@gmail.com', // Fetched vendor email
-//       item_name: venue.title,
-//       item_price: venue.price,
-//       item_image_url: venue.image_url, // Use fetched image URL
-//       accepted: false,
-//     };
-
-//     try {
-//       const response = await fetch('https://event-planner-y4fw.onrender.com/api/orders/addOrder', {
-//         method: 'POST',
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify(orderDetails),
-//       });
-
-//       if (response.ok) {
-//         const orderData = await response.json(); // Get the order data including the generated order ID
-//         const orderId = orderData.order.order_id; // Adjust this based on your response structure
-
-//         // Update user's order history
-//         const userUpdateResponse = await fetch(`https://event-planner-y4fw.onrender.com/api/user/updateOrderHistory`, {
-//           method: 'PUT',
-//           headers: {
-//             'Content-Type': 'application/json',
-//           },
-//           body: JSON.stringify({ email: user.email, orderId }), // Send email and order ID to update
-//         });
-
-//         if (userUpdateResponse.ok) {
-//           alert("Order placed successfully!");
-//           navigate('/profile'); // Redirect to profile after updating order history
-//         } else {
-//           console.error('Error updating order history:', await userUpdateResponse.json());
-//         }
-//       } else {
-//         const errorData = await response.json();
-//         console.error('Error adding order:', errorData.message || response.statusText);
-//       }
-//     } catch (error) {
-//       console.error('Error:', error);
-//     }
-//   };
-
-//   return (
-//     <div className="venue-detail-container">
-//       <div className="image-price-section">
-//         <div className="image-section">
-//           <img src={venue.image_url} alt={venue.title} /> {/* Updated to match the backend field */}
-//         </div>
-//         <div className="price-card">
-//           <h3 className='h3Class'>Starting Price</h3>
-//           <p>Total Price: {venue.price ? `INR ${venue.price}` : 'Price not available'}</p>
-//           <p className="special-deal">Special deal!!</p>
-//         </div>
-//       </div>
-//       <div className="details-card">
-//         <h2>{venue.title}</h2>
-//         <p>{venue.location}</p>
-//         <div className="rating-section">
-//           <span>{venue.ratings} ⭐</span> {/* Updated to match the backend field */}
-//         </div>
-//         <div className="button-group">
-//           <button className="wishlist-button">❤️ Wishlist</button>
-//           <button className="book-button" onClick={handleBookNow}>Book Now</button>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default VenueDetail;
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -138,11 +12,73 @@ const VenueDetail = () => {
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [eventDetails, setEventDetails] = useState({
+    eventName: '',
     eventDate: '',
     eventTime: '',
-    eventLocation: '',
     specialInstructions: '',
   });
+  const [bookedDates, setBookedDates] = useState([]);
+  const [showBookedDates, setShowBookedDates] = useState(false);
+  const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
+
+  const validateDateTime = (date, time) => {
+    const now = new Date();
+    const selectedDateTime = new Date(`${date}T${time}`);
+    return selectedDateTime > now;
+  };
+
+  const checkDateAvailability = async (date) => {
+    try {
+      if (!venue) throw new Error('Venue information not available');
+
+      const response = await fetch('https://event-planner-y4fw.onrender.com/api/orders/check-venue-availability', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          venueId: venue.product_id || venue.title, // Use product_id or fallback to title
+          date,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to check availability');
+      }
+
+      const data = await response.json();
+      return data.isAvailable;
+    } catch (error) {
+      console.error('Error checking availability:', error);
+      return true; // Default to true to avoid blocking date selection on error
+    }
+  };
+
+  const fetchBookedDates = async () => {
+    setIsCheckingAvailability(true);
+    try {
+      if (!venue) throw new Error('Venue information not available');
+      const venueId = venue.product_id || venue.title;
+
+      const response = await fetch(
+        `https://event-planner-y4fw.onrender.com/api/orders/venue-booked-dates/${encodeURIComponent(venueId)}`
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch booked dates');
+      }
+
+      const data = await response.json();
+      setBookedDates(data.bookedDates || []);
+      setShowBookedDates(true);
+    } catch (error) {
+      console.error('Error fetching booked dates:', error);
+      setBookedDates([]);
+      alert('Unable to fetch booked dates. Please try again later.');
+    } finally {
+      setIsCheckingAvailability(false);
+    }
+  };
 
   // Fetch all venues from the backend
   useEffect(() => {
@@ -181,12 +117,26 @@ const VenueDetail = () => {
     setShowModal(true);
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChange = async (e) => {
     const { name, value } = e.target;
-    setEventDetails({
-      ...eventDetails,
+
+    if (name === 'eventDate') {
+      try {
+        const isAvailable = await checkDateAvailability(value);
+        if (!isAvailable) {
+          alert('This date is already booked. Please select another date.');
+          return;
+        }
+      } catch (error) {
+        console.error('Date availability check failed:', error);
+        // Don't block the date selection on error
+      }
+    }
+
+    setEventDetails((prev) => ({
+      ...prev,
       [name]: value,
-    });
+    }));
   };
 
   const sendBookingConfirmationEmail = async (vendorEmail, eventDetails, venue, client) => {
@@ -216,6 +166,16 @@ const VenueDetail = () => {
   };
 
   const handleSubmit = async () => {
+    if (!eventDetails.eventName.trim()) {
+      alert('Please enter an event name');
+      return;
+    }
+
+    if (!validateDateTime(eventDetails.eventDate, eventDetails.eventTime)) {
+      alert('Please select a future date and time');
+      return;
+    }
+
     const orderDetails = {
       customer_email: user.email,
       vendor_email: venue.vendor_email || 'vendor@gmail.com',
@@ -223,7 +183,11 @@ const VenueDetail = () => {
       item_price: venue.price,
       item_image_url: venue.image_url,
       accepted: false,
-      eventDetails,
+      venue_id: venue.product_id,
+      eventDetails: {
+        ...eventDetails,
+        eventLocation: venue.location,
+      },
     };
 
     try {
@@ -370,6 +334,75 @@ const VenueDetail = () => {
               marginTop: '5px'
             }}>Special deal!!</p>
           </div>
+
+          <button 
+            onClick={fetchBookedDates}
+            disabled={isCheckingAvailability}
+            style={{
+              width: '100%',
+              padding: '12px',
+              marginTop: '10px',
+              backgroundColor: '#007bff',
+              color: 'white',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: isCheckingAvailability ? 'wait' : 'pointer',
+              opacity: isCheckingAvailability ? 0.7 : 1
+            }}
+          >
+            {isCheckingAvailability ? 'Checking...' : 'Check Availability'}
+          </button>
+
+          {showBookedDates && (
+            <div style={{
+              marginTop: '15px',
+              padding: '15px',
+              backgroundColor: '#f8f9fa',
+              borderRadius: '5px',
+              border: '1px solid #dee2e6'
+            }}>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '10px'
+              }}>
+                <h4 style={{ margin: 0 }}>Booked Dates</h4>
+                <button 
+                  onClick={() => setShowBookedDates(false)}
+                  style={{
+                    border: 'none',
+                    background: 'none',
+                    fontSize: '20px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  ×
+                </button>
+              </div>
+              {bookedDates.length > 0 ? (
+                <ul style={{ 
+                  listStyle: 'none', 
+                  padding: 0,
+                  margin: 0 
+                }}>
+                  {bookedDates.map((date, index) => (
+                    <li key={index} style={{
+                      padding: '5px',
+                      marginBottom: '5px',
+                      backgroundColor: '#fee2e2',
+                      borderRadius: '3px',
+                      color: '#dc2626'
+                    }}>
+                      {new Date(date).toLocaleDateString()}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p style={{ margin: 0, color: '#16a34a' }}>No dates are currently booked</p>
+              )}
+            </div>
+          )}
           
           {/* Buttons */}
           <div style={{
@@ -455,12 +488,38 @@ const VenueDetail = () => {
                 color: '#333',
                 marginBottom: '15px'
               }}>
+                <label>Event Name:</label>
+                <input
+                  type="text"
+                  name="eventName"
+                  value={eventDetails.eventName}
+                  onChange={handleInputChange}
+                  required
+                  placeholder="Enter event name"
+                  style={{
+                    padding: '10px',
+                    border: '1px solid #ccc',
+                    borderRadius: '4px',
+                    fontSize: '0.9rem'
+                  }}
+                />
+              </div>
+              
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '5px',
+                fontSize: '0.9rem',
+                color: '#333',
+                marginBottom: '15px'
+              }}>
                 <label>Event Date:</label>
                 <input
                   type="date"
                   name="eventDate"
                   value={eventDetails.eventDate}
                   onChange={handleInputChange}
+                  min={new Date().toISOString().split('T')[0]}
                   required
                   style={{
                     padding: '10px',
@@ -503,30 +562,6 @@ const VenueDetail = () => {
                 color: '#333',
                 marginBottom: '15px'
               }}>
-                <label>Event Location:</label>
-                <input
-                  type="text"
-                  name="eventLocation"
-                  value={eventDetails.eventLocation}
-                  onChange={handleInputChange}
-                  required
-                  style={{
-                    padding: '10px',
-                    border: '1px solid #ccc',
-                    borderRadius: '4px',
-                    fontSize: '0.9rem'
-                  }}
-                />
-              </div>
-              
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '5px',
-                fontSize: '0.9rem',
-                color: '#333',
-                marginBottom: '15px'
-              }}>
                 <label>Special Instructions:</label>
                 <textarea
                   name="specialInstructions"
@@ -541,6 +576,21 @@ const VenueDetail = () => {
                     minHeight: '80px'
                   }}
                 />
+              </div>
+              
+              <div className="venue-location" style={{
+                marginBottom: '15px',
+                padding: '10px',
+                backgroundColor: '#f8f9fa',
+                borderRadius: '4px'
+              }}>
+                <label style={{
+                  display: 'block',
+                  marginBottom: '5px',
+                  fontWeight: 'bold',
+                  color: '#555'
+                }}>Venue Location:</label>
+                <p style={{margin: 0, color: '#666'}}>{venue.location}</p>
               </div>
               
               <div style={{
