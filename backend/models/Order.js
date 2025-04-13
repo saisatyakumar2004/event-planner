@@ -5,29 +5,31 @@ const OrderSchema = new mongoose.Schema({
   customer_email: { type: String, required: true },
   vendor_email: { type: String, required: true },
   item_name: { type: String, required: true },
-  item_price: { type: String, required: true },
+  item_price: { type: mongoose.Schema.Types.Mixed, required: true }, // Changed to Mixed type
   item_image_url: { type: String, required: true },
   accepted: { type: Boolean, default: false },
   rejected: { type: Boolean, default: false },
   venue_id: { 
     type: String, 
-    required: true,
+    required: false, // Changed from true to false
+    sparse: true,
     index: true 
   },
   eventDetails: {
     eventDate: { 
       type: String, 
       required: true,
-      index: true // Add index for better query performance
+      index: true
     },
     eventTime: { type: String, required: true },
     eventName: { type: String, required: true },
     specialInstructions: String,
-    eventLocation: String
+    eventLocation: { type: String, default: '' }
   },
+}, {
+  timestamps: true
 });
 
-// Add compound index for venue availability queries
 OrderSchema.index({ venue_id: 1, 'eventDetails.eventDate': 1 });
 
 module.exports = mongoose.model('Order', OrderSchema);

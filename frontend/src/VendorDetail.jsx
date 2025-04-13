@@ -236,33 +236,34 @@ const VendorDetail = () => {
   };
 
   const handleSubmit = async () => {
+    if (!validateDateTime(eventDetails.eventDate, eventDetails.eventTime)) {
+      alert('Please select a future date and time');
+      return;
+    }
+
+    if (!eventDetails.eventName.trim()) {
+      alert('Please enter an event name');
+      return;
+    }
+
+    const order_id = `order-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
+    const orderData = {
+      order_id, // Include order_id
+      customer_email: user.email,
+      vendor_email: vendor.vendor_email || 'vendor@example.com',
+      item_name: vendor.title,
+      item_price: vendor.price,
+      item_image_url: vendor.image_url,
+      venue_id: vendor.product_id || 'default-venue',
+      eventDetails: {
+        ...eventDetails,
+        eventLocation: eventDetails.eventLocation || vendor.location,
+        eventName: eventDetails.eventName || vendor.title
+      }
+    };
+
     try {
-      if (!validateDateTime(eventDetails.eventDate, eventDetails.eventTime)) {
-        alert('Please select a future date and time');
-        return;
-      }
-
-      if (!eventDetails.eventName.trim()) {
-        alert('Please enter an event name');
-        return;
-      }
-
-      const orderData = {
-        order_id: `${Date.now()}-${Math.floor(Math.random() * 1000)}`,
-        customer_email: user.email,
-        vendor_email: vendor.vendor_email || 'vendor@gmail.com',
-        item_name: vendor.title,
-        item_price: vendor.price,
-        item_image_url: vendor.image_url,
-        venue_id: vendor.product_id, // Required field
-        vendor_id: vendor.product_id, // Add vendor_id
-        eventDetails: {
-          ...eventDetails,
-          eventLocation: eventDetails.eventLocation || vendor.location,
-          eventName: eventDetails.eventName || vendor.title
-        }
-      };
-
       const response = await fetch('http://localhost:5000/api/orders/addOrder', {
         method: 'POST',
         headers: {
@@ -272,18 +273,26 @@ const VendorDetail = () => {
       });
 
       if (!response.ok) {
-        throw new Error((await response.json()).message || 'Failed to create order');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to create order');
       }
 
       const data = await response.json();
-      await sendBookingConfirmationEmail(vendor.vendor_email, eventDetails, vendor, user);
-      setShowModal(false);
-      alert('Order placed successfully!');
-      navigate('/profile');
 
+      const client = {
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+      };
+
+      await sendBookingConfirmationEmail(vendor.vendor_email, eventDetails, vendor, client);
+
+      alert("Order Placed Successfully!");
+      setShowModal(false);
+      navigate('/profile');
     } catch (error) {
-      console.error('Error:', error);
-      alert(error.message || 'Error placing order');
+      console.error('Error creating order:', error);
+      alert(error.message || 'Error creating order. Please try again.');
     }
   };
 

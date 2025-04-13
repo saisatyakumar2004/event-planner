@@ -12,23 +12,8 @@ const generateOrderId = () => {
 // POST route to create a new order
 router.post('/addOrder', async (req, res) => {
   try {
-    // Validate required fields
-    const requiredFields = ['order_id', 'customer_email', 'vendor_email', 'item_name', 'item_price', 'venue_id'];
-    for (const field of requiredFields) {
-      if (!req.body[field]) {
-        throw new Error(`Missing required field: ${field}`);
-      }
-    }
-
     const orderData = {
-      order_id: req.body.order_id,
-      customer_email: req.body.customer_email,
-      vendor_email: req.body.vendor_email,
-      item_name: req.body.item_name,
-      item_price: req.body.item_price,
-      item_image_url: req.body.item_image_url,
-      venue_id: req.body.venue_id,
-      eventDetails: req.body.eventDetails,
+      ...req.body,
       accepted: false,
       rejected: false
     };
@@ -36,11 +21,14 @@ router.post('/addOrder', async (req, res) => {
     const newOrder = new Order(orderData);
     const savedOrder = await newOrder.save();
 
-    // Update user's order history
+    // Store the string ID instead of ObjectId
+    const orderId = savedOrder.order_id;
+
+    // Update user's order history with the string ID
     const User = require('../models/User');
     await User.findOneAndUpdate(
       { email: req.body.customer_email },
-      { $push: { orderHistory: orderData.order_id } }
+      { $push: { orderHistory: orderId } }
     );
 
     res.status(201).json({
