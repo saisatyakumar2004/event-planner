@@ -6,7 +6,10 @@ const userSchema = new mongoose.Schema({
   email: { type: String, unique: true },
   password: String, // You should hash this before saving
   phoneNumber: String,
-  orderHistory: [String] // Storing order IDs
+  orderHistory: {
+    type: [String], // Change from [mongoose.Schema.Types.ObjectId] to [String]
+    default: []
+  }
 });
 
 const User = mongoose.model('User', userSchema);

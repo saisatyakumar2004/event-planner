@@ -11,8 +11,7 @@ const Profile = () => {
     const [phoneNumber, setPhoneNumber] = useState('');
     const [orderHistory, setOrderHistory] = useState([]); // Constant for order history
     const [orderDetails, setOrderDetails] = useState([]);
-
-
+    const [error, setError] = useState(null);
 
     const handleCancelOrder = async (orderId) => {
         try {
@@ -39,8 +38,6 @@ const Profile = () => {
         }
     };
     
-
-    
     useEffect(() => {
         const loggedInUser = localStorage.getItem('user');
         if (!loggedInUser) {
@@ -55,21 +52,27 @@ const Profile = () => {
         // Fetch user data from the backend using the email
         const fetchUserData = async () => {
             try {
-                const response = await axios.get(`https://event-planner-y4fw.onrender.com/api/user?email=${userData.email}`);
-                const { firstName, lastName, phoneNumber, orderHistory } = response.data;
-                setFirstName(firstName);
-                setLastName(lastName);
-                setEmail(userData.email); 
-                setPhoneNumber(phoneNumber);
-                setOrderHistory(orderHistory || []); // Set order history
-                if (orderHistory && orderHistory.length > 0) {
-                    const ordersResponse = await axios.post('https://event-planner-y4fw.onrender.com/api/orders/fetchOrdersByIds', {
-                        orderIds: orderHistory,
+                // First get user profile data
+                const userResponse = await axios.get(`http://localhost:5000/api/user?email=${userData.email}`);
+                
+                if (userResponse.data && userResponse.data.orderHistory?.length > 0) {
+                    // Then fetch orders using the order IDs
+                    const ordersResponse = await axios.post('http://localhost:5000/api/orders/fetchOrdersByIds', {
+                        orderIds: userResponse.data.orderHistory
                     });
-                    setOrderDetails(ordersResponse.data);
+                    
+                    if (ordersResponse.data) {
+                        setOrderDetails(ordersResponse.data);
+                    }
                 }
+                
+                setFirstName(userResponse.data.firstName);
+                setLastName(userResponse.data.lastName);
+                setEmail(userResponse.data.email);
+                setPhoneNumber(userResponse.data.phoneNumber);
             } catch (error) {
                 console.error('Error fetching user data:', error);
+                setError('Failed to load user data. Please try again later.');
             }
         };
 
@@ -247,63 +250,40 @@ const Profile = () => {
                         </div>
                     )}
                     {section === 'orders' && (
-                             <div id="orderHistoryProfile">
-                                      <h2>Order History</h2>
-                                 <div className="orderCardsContainer">
-                                    {orderDetails && orderDetails.length > 0 ? (
-                                      orderDetails.map((order) => (
-                                     <div key={order.order_id} className="orderCard">
-                                     <div className="orderCardUpper">
-                                     <span className="orderCardLeft">Order ID: {order.order_id}</span>
-                                    <span className="orderCardRight">Total: ₹{order.item_price}</span>
-                                </div>
-                             <div className="orderCardLower">
-                                  <span className="orderCardLeft">Item: {order.item_name}</span>
-                                  
-                             {/* <button
-                                className={`orderButton ${
-                                 order.accepted ? 'accepted' : 'requested'
-                            }`}
-                        >
-                            {order.accepted ? 'Accepted' : 'Requested'}
-                            {order.rejected ? 'Rejected' : 'Requested'}
-                        </button>
-                        <button
-                            className="cancelOrderButton"
-                            onClick={() => handleCancelOrder(order.order_id)}
-                        >
-                            Cancel Order
-                        </button> */}
-                         <button
-                                className={`orderButton ${
-                                    order.accepted ? 'accepted' : order.rejected ? 'rejected' : 'requested'
-                                }`}
-                            >
-                                {order.accepted ? 'Order Accepted' : order.rejected ? 'Order Rejected' : 'Requested'}
-                            </button>
-                           
-                                <button
-                                    className="cancelOrderButton"
-                                    onClick={() => handleCancelOrder(order.order_id)}
-                                >
-                                    Cancel Order
-                                </button>
-                            
-
-
-
-                    </div>
-                </div>
-            ))
-        ) : (
-            <p>No orders found.</p>
-        )}
-    </div>
-</div>
-
-)}
-
-
+                        <div id="orderHistoryProfile">
+                            <h2>Order History</h2>
+                            <div className="orderCardsContainer">
+                                {orderDetails && orderDetails.length > 0 ? (
+                                    orderDetails.map((order) => (
+                                        <div key={order.order_id} className="orderCard">
+                                            <div className="orderCardUpper">
+                                                <span className="orderCardLeft">Order ID: {order.order_id}</span>
+                                                <span className="orderCardRight">Total: ₹{order.item_price}</span>
+                                            </div>
+                                            <div className="orderCardLower">
+                                                <span className="orderCardLeft">Item: {order.item_name}</span>
+                                                <button
+                                                    className={`orderButton ${
+                                                        order.accepted ? 'accepted' : order.rejected ? 'rejected' : 'requested'
+                                                    }`}
+                                                >
+                                                    {order.accepted ? 'Order Accepted' : order.rejected ? 'Order Rejected' : 'Requested'}
+                                                </button>
+                                                <button
+                                                    className="cancelOrderButton"
+                                                    onClick={() => handleCancelOrder(order.order_id)}
+                                                >
+                                                    Cancel Order
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p>No orders found.</p>
+                                )}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

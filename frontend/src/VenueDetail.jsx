@@ -17,9 +17,6 @@ const VenueDetail = () => {
     eventTime: '',
     specialInstructions: '',
   });
-  const [bookedDates, setBookedDates] = useState([]);
-  const [showBookedDates, setShowBookedDates] = useState(false);
-  const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
 
   const validateDateTime = (date, time) => {
     const now = new Date();
@@ -27,64 +24,11 @@ const VenueDetail = () => {
     return selectedDateTime > now;
   };
 
-  const checkDateAvailability = async (date) => {
-    try {
-      if (!venue) throw new Error('Venue information not available');
-
-      const response = await fetch('https://event-planner-y4fw.onrender.com/api/orders/check-venue-availability', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          venueId: venue.product_id || venue.title, // Use product_id or fallback to title
-          date,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to check availability');
-      }
-
-      const data = await response.json();
-      return data.isAvailable;
-    } catch (error) {
-      console.error('Error checking availability:', error);
-      return true; // Default to true to avoid blocking date selection on error
-    }
-  };
-
-  const fetchBookedDates = async () => {
-    setIsCheckingAvailability(true);
-    try {
-      if (!venue) throw new Error('Venue information not available');
-      const venueId = venue.product_id || venue.title;
-
-      const response = await fetch(
-        `https://event-planner-y4fw.onrender.com/api/orders/venue-booked-dates/${encodeURIComponent(venueId)}`
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch booked dates');
-      }
-
-      const data = await response.json();
-      setBookedDates(data.bookedDates || []);
-      setShowBookedDates(true);
-    } catch (error) {
-      console.error('Error fetching booked dates:', error);
-      setBookedDates([]);
-      alert('Unable to fetch booked dates. Please try again later.');
-    } finally {
-      setIsCheckingAvailability(false);
-    }
-  };
-
   // Fetch all venues from the backend
   useEffect(() => {
     const fetchVenues = async () => {
       try {
-        const response = await axios.get('https://event-planner-y4fw.onrender.com/api/product/venues');
+        const response = await axios.get('http://localhost:5000/api/product/venues');
         setVenues(response.data);
       } catch (error) {
         console.error('Error fetching venues:', error);
@@ -117,122 +61,51 @@ const VenueDetail = () => {
     setShowModal(true);
   };
 
-  const handleInputChange = async (e) => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
-
-    if (name === 'eventDate') {
-      try {
-        const isAvailable = await checkDateAvailability(value);
-        if (!isAvailable) {
-          alert('This date is already booked. Please select another date.');
-          return;
-        }
-      } catch (error) {
-        console.error('Date availability check failed:', error);
-        // Don't block the date selection on error
-      }
-    }
-
     setEventDetails((prev) => ({
       ...prev,
       [name]: value,
     }));
   };
 
-  const sendBookingConfirmationEmail = async (vendorEmail, eventDetails, venue, client) => {
-    try {
-      const response = await fetch('https://event-planner-y4fw.onrender.com/api/otp/send-booking-confirmation', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: vendorEmail,
-          eventDetails,
-          vendor: venue,
-          client,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to send booking confirmation email');
-      }
-
-      const data = await response.json();
-      console.log(data.msg);
-    } catch (error) {
-      console.error('Error sending booking confirmation email:', error);
-    }
-  };
-
   const handleSubmit = async () => {
-    if (!eventDetails.eventName.trim()) {
-      alert('Please enter an event name');
+    if (!user) {
+      navigate('/login');
       return;
     }
-
+    
     if (!validateDateTime(eventDetails.eventDate, eventDetails.eventTime)) {
-      alert('Please select a future date and time');
+      setError('Please select a future date and time');
       return;
     }
-
-    const orderDetails = {
-      customer_email: user.email,
-      vendor_email: venue.vendor_email || 'vendor@gmail.com',
-      item_name: venue.title,
-      item_price: venue.price,
-      item_image_url: venue.image_url,
-      accepted: false,
-      venue_id: venue.product_id,
-      eventDetails: {
-        ...eventDetails,
-        eventLocation: venue.location,
-      },
-    };
 
     try {
-      const response = await fetch('https://event-planner-y4fw.onrender.com/api/orders/addOrder', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(orderDetails),
-      });
-
-      if (response.ok) {
-        const orderData = await response.json();
-        const orderId = orderData.order.order_id;
-
-        // Update user's order history
-        const userUpdateResponse = await fetch(`https://event-planner-y4fw.onrender.com/api/user/updateOrderHistory`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ email: user.email, orderId }),
-        });
-
-        if (userUpdateResponse.ok) {
-          const client = {
-            name: user.name,
-            email: user.email,
-            phone: user.phone,
-          };
-          await sendBookingConfirmationEmail(venue.vendor_email, eventDetails, venue, client);
-
-          alert("Order Placed Successfully!");
-          navigate('/profile');
-        } else {
-          console.error('Error updating order history:', await userUpdateResponse.json());
+      const order_id = `${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      const orderData = {
+        order_id,
+        customer_email: user.email,
+        vendor_email: venue.vendor_email || 'vendor@example.com',
+        item_name: venue.title,
+        item_price: venue.price,
+        item_image_url: venue.image_url,
+        venue_id: venue.product_id || id,
+        eventDetails: {
+          ...eventDetails,
+          eventLocation: venue.location,
+          eventName: eventDetails.eventName || venue.title
         }
-      } else {
-        const errorData = await response.json();
-        console.error('Error adding order:', errorData.message || response.statusText);
+      };
+
+      const response = await axios.post('http://localhost:5000/api/orders/addOrder', orderData);
+
+      if (response.data) {
+        setShowModal(false);
+        alert('Order placed successfully!');
       }
     } catch (error) {
-      console.error('Error:', error);
-    } finally {
-      setShowModal(false);
+      console.error('Error creating order:', error.response?.data || error.message);
+      setError(error.response?.data?.message || 'Error creating order. Please try again.');
     }
   };
 
@@ -335,75 +208,6 @@ const VenueDetail = () => {
             }}>Special deal!!</p>
           </div>
 
-          <button 
-            onClick={fetchBookedDates}
-            disabled={isCheckingAvailability}
-            style={{
-              width: '100%',
-              padding: '12px',
-              marginTop: '10px',
-              backgroundColor: '#007bff',
-              color: 'white',
-              border: 'none',
-              borderRadius: '5px',
-              cursor: isCheckingAvailability ? 'wait' : 'pointer',
-              opacity: isCheckingAvailability ? 0.7 : 1
-            }}
-          >
-            {isCheckingAvailability ? 'Checking...' : 'Check Availability'}
-          </button>
-
-          {showBookedDates && (
-            <div style={{
-              marginTop: '15px',
-              padding: '15px',
-              backgroundColor: '#f8f9fa',
-              borderRadius: '5px',
-              border: '1px solid #dee2e6'
-            }}>
-              <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: '10px'
-              }}>
-                <h4 style={{ margin: 0 }}>Booked Dates</h4>
-                <button 
-                  onClick={() => setShowBookedDates(false)}
-                  style={{
-                    border: 'none',
-                    background: 'none',
-                    fontSize: '20px',
-                    cursor: 'pointer'
-                  }}
-                >
-                  ×
-                </button>
-              </div>
-              {bookedDates.length > 0 ? (
-                <ul style={{ 
-                  listStyle: 'none', 
-                  padding: 0,
-                  margin: 0 
-                }}>
-                  {bookedDates.map((date, index) => (
-                    <li key={index} style={{
-                      padding: '5px',
-                      marginBottom: '5px',
-                      backgroundColor: '#fee2e2',
-                      borderRadius: '3px',
-                      color: '#dc2626'
-                    }}>
-                      {new Date(date).toLocaleDateString()}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p style={{ margin: 0, color: '#16a34a' }}>No dates are currently booked</p>
-              )}
-            </div>
-          )}
-          
           {/* Buttons */}
           <div style={{
             display: 'flex',

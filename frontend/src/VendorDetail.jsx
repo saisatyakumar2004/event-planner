@@ -33,7 +33,7 @@ const VendorDetail = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('https://event-planner-y4fw.onrender.com/api/product/products');
+        const response = await fetch('http://localhost:5000/api/product/products');
         const data = await response.json();
         
         let vendorData = [];
@@ -61,7 +61,7 @@ const VendorDetail = () => {
 
         // Only fetch reviews if we found the vendor
         if (foundVendor) {
-          const reviewsResponse = await fetch(`https://event-planner-y4fw.onrender.com/api/reviews/${id}`);
+          const reviewsResponse = await fetch(`http://localhost:5000/api/reviews/${id}`);
           if (reviewsResponse.ok) {
             const reviewsData = await reviewsResponse.json();
             setReviews(reviewsData.reviews || []);
@@ -110,7 +110,7 @@ const VendorDetail = () => {
   
     try {
       // 1. Verify the order exists and belongs to the user
-      const orderResponse = await fetch(`https://event-planner-y4fw.onrender.com/api/orders/${reviewInput.orderId}`);
+      const orderResponse = await fetch(`http://localhost:5000/api/orders/${reviewInput.orderId}`);
       
       // First check response status
       if (!orderResponse.ok) {
@@ -134,7 +134,7 @@ const VendorDetail = () => {
   
       // 2. Check for existing review
       const checkReviewResponse = await fetch(
-        `https://event-planner-y4fw.onrender.com/api/reviews/check?productId=${id}&orderId=${reviewInput.orderId}`
+        `http://localhost:5000/api/reviews/check?productId=${id}&orderId=${reviewInput.orderId}`
       );
       
       if (!checkReviewResponse.ok) {
@@ -150,7 +150,7 @@ const VendorDetail = () => {
       }
   
       // 3. Submit the review
-      const reviewResponse = await fetch('https://event-planner-y4fw.onrender.com/api/reviews/add', {
+      const reviewResponse = await fetch('http://localhost:5000/api/reviews/add', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -211,7 +211,7 @@ const VendorDetail = () => {
 
   const sendBookingConfirmationEmail = async (vendorEmail, eventDetails, vendor, client) => {
     try {
-      const response = await fetch('https://event-planner-y4fw.onrender.com/api/otp/send-booking-confirmation', {
+      const response = await fetch('http://localhost:5000/api/otp/send-booking-confirmation', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -236,73 +236,54 @@ const VendorDetail = () => {
   };
 
   const handleSubmit = async () => {
-    // Validate date and time
-    if (!validateDateTime(eventDetails.eventDate, eventDetails.eventTime)) {
-      alert('Please select a future date and time');
-      return;
-    }
-
-    // Validate event name
-    if (!eventDetails.eventName.trim()) {
-      alert('Please enter an event name');
-      return;
-    }
-
-    const orderDetails = {
-      customer_email: user.email,
-      vendor_email: vendor.vendor_email || 'vendor@gmail.com',
-      item_name: vendor.title,
-      item_price: vendor.price,
-      item_image_url: vendor.image_url,
-      accepted: false,
-      eventDetails,
-    };
-
     try {
-      const response = await fetch('https://event-planner-y4fw.onrender.com/api/orders/addOrder', {
+      if (!validateDateTime(eventDetails.eventDate, eventDetails.eventTime)) {
+        alert('Please select a future date and time');
+        return;
+      }
+
+      if (!eventDetails.eventName.trim()) {
+        alert('Please enter an event name');
+        return;
+      }
+
+      const orderData = {
+        order_id: `${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+        customer_email: user.email,
+        vendor_email: vendor.vendor_email || 'vendor@gmail.com',
+        item_name: vendor.title,
+        item_price: vendor.price,
+        item_image_url: vendor.image_url,
+        venue_id: vendor.product_id, // Required field
+        vendor_id: vendor.product_id, // Add vendor_id
+        eventDetails: {
+          ...eventDetails,
+          eventLocation: eventDetails.eventLocation || vendor.location,
+          eventName: eventDetails.eventName || vendor.title
+        }
+      };
+
+      const response = await fetch('http://localhost:5000/api/orders/addOrder', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(orderDetails),
+        body: JSON.stringify(orderData),
       });
 
-      const orderData = await response.json();
-      
       if (!response.ok) {
-        throw new Error(orderData.message || 'Failed to create order');
+        throw new Error((await response.json()).message || 'Failed to create order');
       }
 
-      const orderId = orderData.order.order_id;
-
-      const userUpdateResponse = await fetch('https://event-planner-y4fw.onrender.com/api/user/updateOrderHistory', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: user.email, orderId }),
-      });
-
-      if (!userUpdateResponse.ok) {
-        const errorData = await userUpdateResponse.json();
-        console.error('Error updating order history:', errorData);
-        throw new Error(errorData.message || 'Failed to update order history');
-      }
-
-      const client = {
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
-      };
-      await sendBookingConfirmationEmail(vendor.vendor_email, eventDetails, vendor, client);
-
-      alert("Order Placed Successfully!");
+      const data = await response.json();
+      await sendBookingConfirmationEmail(vendor.vendor_email, eventDetails, vendor, user);
+      setShowModal(false);
+      alert('Order placed successfully!');
       navigate('/profile');
+
     } catch (error) {
       console.error('Error:', error);
       alert(error.message || 'Error placing order');
-    } finally {
-      setShowModal(false);
     }
   };
 

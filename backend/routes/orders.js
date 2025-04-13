@@ -12,29 +12,46 @@ const generateOrderId = () => {
 // POST route to create a new order
 router.post('/addOrder', async (req, res) => {
   try {
-    const { customer_email, vendor_email, item_name, item_price, item_image_url, eventDetails } = req.body;
+    // Validate required fields
+    const requiredFields = ['order_id', 'customer_email', 'vendor_email', 'item_name', 'item_price', 'venue_id'];
+    for (const field of requiredFields) {
+      if (!req.body[field]) {
+        throw new Error(`Missing required field: ${field}`);
+      }
+    }
 
-    const newOrder = new Order({
-      order_id: generateOrderId(), // Generate unique order ID
-      customer_email,
-      vendor_email,
-      item_name,
-      item_price,
-      item_image_url,
-      accepted: false, // Initialize as not accepted (false)
-      eventDetails, // Store event details in the order
-    });
+    const orderData = {
+      order_id: req.body.order_id,
+      customer_email: req.body.customer_email,
+      vendor_email: req.body.vendor_email,
+      item_name: req.body.item_name,
+      item_price: req.body.item_price,
+      item_image_url: req.body.item_image_url,
+      venue_id: req.body.venue_id,
+      eventDetails: req.body.eventDetails,
+      accepted: false,
+      rejected: false
+    };
 
-    await newOrder.save();
+    const newOrder = new Order(orderData);
+    const savedOrder = await newOrder.save();
+
+    // Update user's order history
+    const User = require('../models/User');
+    await User.findOneAndUpdate(
+      { email: req.body.customer_email },
+      { $push: { orderHistory: orderData.order_id } }
+    );
 
     res.status(201).json({
       message: 'Order created successfully',
-      order: newOrder,
+      order: savedOrder
     });
   } catch (error) {
+    console.error('Order creation error:', error);
     res.status(500).json({
       message: 'Error creating order',
-      error: error.message,
+      error: error.message
     });
   }
 });
@@ -73,22 +90,19 @@ router.get('/:orderId', async (req, res) => {
 
 // POST route to fetch multiple orders by their order IDs
 router.post('/fetchOrdersByIds', async (req, res) => {
-  const { orderIds } = req.body; // Expecting an array of order IDs
-
   try {
-    // Fetch orders that match any of the order IDs provided in the request
-    const orders = await Order.find({ order_id: { $in: orderIds } });
-
-    // Check if orders were found
-    if (orders.length === 0) {
-      return res.status(404).json({ message: 'No orders found for the provided IDs' });
+    const { orderIds } = req.body;
+    if (!orderIds || !Array.isArray(orderIds)) {
+      return res.status(400).json({ message: 'Invalid order IDs provided' });
     }
 
-    res.status(200).json(orders); // Return the found orders
+    const orders = await Order.find({ order_id: { $in: orderIds } });
+    res.json(orders);
   } catch (error) {
+    console.error('Error fetching orders:', error);
     res.status(500).json({
       message: 'Error fetching orders',
-      error: error.message,
+      error: error.message
     });
   }
 });
