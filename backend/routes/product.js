@@ -99,4 +99,40 @@ router.get('/venues', async (req, res) => {
     }
 });
 
+// Route to fetch products by vendor email
+router.get('/vendor-products/:vendor_email', async (req, res) => {
+    try {
+        const products = await Product.find({ vendor_email: req.params.vendor_email });
+        res.status(200).json(products);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching vendor products', error });
+    }
+});
+
+// Update route to handle image updates
+router.put('/update/:product_id', async (req, res) => {
+    try {
+        const { image_url, ...otherUpdates } = req.body;
+        const updateData = {
+            ...otherUpdates,
+            ...(image_url && { image_url }) // Only include image_url if it exists
+        };
+
+        const updatedProduct = await Product.findOneAndUpdate(
+            { product_id: req.params.product_id },
+            updateData,
+            { new: true }
+        );
+
+        if (!updatedProduct) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+        
+        res.status(200).json(updatedProduct);
+    } catch (error) {
+        console.error('Error updating product:', error);
+        res.status(500).json({ message: 'Error updating product', error });
+    }
+});
+
 module.exports = router;
