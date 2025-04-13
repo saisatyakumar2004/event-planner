@@ -223,3 +223,82 @@
 .cancelOrderButton:hover {
     background-color: #ff1a1a; /* Darker red on hover */
 }
+
+/* Event Details Modal Styles */
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modalContent {
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.eventDetailsContainer {
+    margin: 20px 0;
+}
+
+.detailRow {
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.detailRow strong {
+    display: inline-block;
+    width: 150px;
+    color: #555;
+}
+
+.detailRow span, .detailRow p {
+    color: #333;
+}
+
+.viewDetailsButton {
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    margin: 0 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.viewDetailsButton:hover {
+    background-color: #357abd;
+}
+
+.closeButton {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    float: right;
+    margin-top: 15px;
+}
+
+.closeButton:hover {
+    background-color: #5a6268;
+}
+
+.orderCardActions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}

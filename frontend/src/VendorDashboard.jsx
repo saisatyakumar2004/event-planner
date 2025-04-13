@@ -47,33 +47,42 @@ const VendorDashboard = () => {
             reader.readAsDataURL(file);
         }
     };
-    
+
     const uploadProduct = async () => {
-        console.log();
-        const vendor = JSON.parse(localStorage.getItem('vendor')); // Parse the vendor object from local storage
-    
-        const vendor_email = vendor.vendor_email; // Get the vendor email from local storage
-        const newProduct = {
-            vendor_email,
-            category,
-            title,
-            location,
-            ratings,
-            price,
-            image_url
-        };
+        const vendor = JSON.parse(localStorage.getItem('vendor'));
+        const vendor_email = vendor.vendor_email;
 
         try {
-            const response = await axios.post('http://localhost:5000/api/product/add', newProduct); // Updated endpoint
-            if (response.status === 201) { // Check for status 201 (Created)
+            // First check if vendor already has a product
+            const existingProducts = await axios.get(`http://localhost:5000/api/product/vendor-products/${vendor_email}`);
+            
+            if (existingProducts.data && existingProducts.data.length > 0) {
+                alert('You can only have one product. Please edit or remove your existing product.');
+                return;
+            }
+
+            const newProduct = {
+                vendor_email,
+                category,
+                title,
+                location,
+                ratings,
+                price,
+                image_url
+            };
+
+            const response = await axios.post('http://localhost:5000/api/product/add', newProduct);
+            if (response.status === 201) {
                 alert('Product added successfully!');
-                // Clear the form fields after successful upload
                 setCategory('');
                 setTitle('');
                 setLocation('');
                 setRatings(0);
                 setPrice(0);
                 setImageUrl('');
+                // Refresh products list
+                const updatedProducts = await axios.get(`http://localhost:5000/api/product/vendor-products/${vendor_email}`);
+                setProducts(updatedProducts.data);
             } else {
                 alert('Failed to add product.');
             }
@@ -82,7 +91,7 @@ const VendorDashboard = () => {
             alert('An error occurred while adding the product.');
         }
     };
-    
+
     useEffect(() => {
         const loggedInUser = localStorage.getItem('vendor');
         if (!loggedInUser) {
@@ -554,172 +563,191 @@ const VendorDashboard = () => {
                     {section === 'upload' && (
                         <div style={{ margin: '20px 0' }}>
                             <h2>Upload a New Product</h2>
-                            <div style={{ marginBottom: '15px' }}>
-                                <label style={{ display: 'block', marginBottom: '5px' }} htmlFor="category">Category</label>
-                                <select
-                                    id="category"
-                                    value={category}
-                                    onChange={(e) => setCategory(e.target.value)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '10px',
-                                        border: '1px solid #ced4da',
-                                        borderRadius: '5px'
-                                    }}
-                                >
-                                    <option value="">Select a category</option>
-                                    <option value="wedding-cake">Wedding Cake</option>
-                                    <option value="photographers">Photographers</option>
-                                    <option value="makeup">Makeup</option>
-                                    <option value="mehndi">Mehandi</option>
-                                    <option value="bridal_wear">Bridal Wear</option>
-                                    <option value="groom_wear">Groom Wear</option>
-                                    <option value="venue">Venue</option>
-                                </select>
-                            </div>
-                            <div style={{ marginBottom: '15px' }}>
-                                <label style={{ display: 'block', marginBottom: '5px' }} htmlFor="title">Title</label>
-                                <input
-                                    type="text"
-                                    id="title"
-                                    value={title}
-                                    onChange={(e) => setTitle(e.target.value)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '10px',
-                                        border: '1px solid #ced4da',
-                                        borderRadius: '5px'
-                                    }}
-                                />
-                            </div>
-                            <div style={{ marginBottom: '15px' }}>
-                                <label style={{ display: 'block', marginBottom: '5px' }} htmlFor="location">Location</label>
-                                <input
-                                    type="text"
-                                    id="location"
-                                    value={location}
-                                    onChange={(e) => setLocation(e.target.value)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '10px',
-                                        border: '1px solid #ced4da',
-                                        borderRadius: '5px'
-                                    }}
-                                />
-                            </div>
-                            <div style={{ marginBottom: '15px' }}>
-                                <label style={{ display: 'block', marginBottom: '5px' }} htmlFor="ratings">Ratings (out of 5)</label>
-                                <input
-                                    type="number"
-                                    id="ratings"
-                                    value={ratings}
-                                    min="0"
-                                    max="5"
-                                    onChange={(e) => setRatings(e.target.value)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '10px',
-                                        border: '1px solid #ced4da',
-                                        borderRadius: '5px'
-                                    }}
-                                />
-                            </div>
-                            <div style={{ marginBottom: '15px' }}>
-                                <label style={{ display: 'block', marginBottom: '5px' }} htmlFor="price">Price</label>
-                                <input
-                                    type="number"
-                                    id="price"
-                                    value={price}
-                                    onChange={(e) => setPrice(e.target.value)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '10px',
-                                        border: '1px solid #ced4da',
-                                        borderRadius: '5px'
-                                    }}
-                                />
-                            </div>
-                            <div style={{ marginBottom: '15px' }}>
-                                <label style={{ display: 'block', marginBottom: '5px' }} htmlFor="imageUpload">Upload Image</label>
-                                <input
-                                    type="file"
-                                    id="imageUpload"
-                                    accept="image/*"
-                                    onChange={(e) => handleImageUpload(e)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '10px',
-                                        border: '1px solid #ced4da',
-                                        borderRadius: '5px'
-                                    }}
-                                />
-                            </div>
-                            <button 
-                                style={{
-                                    padding: '10px 20px',
-                                    border: 'none',
+                            {products.length > 0 ? (
+                                <div style={{ 
+                                    padding: '20px', 
+                                    backgroundColor: '#f8d7da', 
                                     borderRadius: '5px',
-                                    cursor: 'pointer',
-                                    backgroundColor: '#007bff',
-                                    color: 'white'
-                                }} 
-                                onClick={uploadProduct}
-                            >
-                                Upload Product
-                            </button>
+                                    color: '#721c24',
+                                    marginBottom: '20px'
+                                }}>
+                                    <h3>You already have a product</h3>
+                                    <p>You can only have one product. Please edit or remove your existing product from the Products section.</p>
+                                </div>
+                            ) : (
+                                <>
+                                    <div style={{ marginBottom: '15px' }}>
+                                        <label style={{ display: 'block', marginBottom: '5px' }} htmlFor="category">Category</label>
+                                        <select
+                                            id="category"
+                                            value={category}
+                                            onChange={(e) => setCategory(e.target.value)}
+                                            style={{
+                                                width: '100%',
+                                                padding: '10px',
+                                                border: '1px solid #ced4da',
+                                                borderRadius: '5px'
+                                            }}
+                                        >
+                                            <option value="">Select a category</option>
+                                            <option value="wedding-cake">Wedding Cake</option>
+                                            <option value="photographers">Photographers</option>
+                                            <option value="makeup">Makeup</option>
+                                            <option value="mehndi">Mehandi</option>
+                                            <option value="bridal_wear">Bridal Wear</option>
+                                            <option value="groom_wear">Groom Wear</option>
+                                            <option value="venue">Venue</option>
+                                        </select>
+                                    </div>
+                                    <div style={{ marginBottom: '15px' }}>
+                                        <label style={{ display: 'block', marginBottom: '5px' }} htmlFor="title">Title</label>
+                                        <input
+                                            type="text"
+                                            id="title"
+                                            value={title}
+                                            onChange={(e) => setTitle(e.target.value)}
+                                            style={{
+                                                width: '100%',
+                                                padding: '10px',
+                                                border: '1px solid #ced4da',
+                                                borderRadius: '5px'
+                                            }}
+                                        />
+                                    </div>
+                                    <div style={{ marginBottom: '15px' }}>
+                                        <label style={{ display: 'block', marginBottom: '5px' }} htmlFor="location">Location</label>
+                                        <input
+                                            type="text"
+                                            id="location"
+                                            value={location}
+                                            onChange={(e) => setLocation(e.target.value)}
+                                            style={{
+                                                width: '100%',
+                                                padding: '10px',
+                                                border: '1px solid #ced4da',
+                                                borderRadius: '5px'
+                                            }}
+                                        />
+                                    </div>
+                                    <div style={{ marginBottom: '15px' }}>
+                                        <label style={{ display: 'block', marginBottom: '5px' }} htmlFor="ratings">Ratings (out of 5)</label>
+                                        <input
+                                            type="number"
+                                            id="ratings"
+                                            value={ratings}
+                                            min="0"
+                                            max="5"
+                                            onChange={(e) => setRatings(e.target.value)}
+                                            style={{
+                                                width: '100%',
+                                                padding: '10px',
+                                                border: '1px solid #ced4da',
+                                                borderRadius: '5px'
+                                            }}
+                                        />
+                                    </div>
+                                    <div style={{ marginBottom: '15px' }}>
+                                        <label style={{ display: 'block', marginBottom: '5px' }} htmlFor="price">Price</label>
+                                        <input
+                                            type="number"
+                                            id="price"
+                                            value={price}
+                                            onChange={(e) => setPrice(e.target.value)}
+                                            style={{
+                                                width: '100%',
+                                                padding: '10px',
+                                                border: '1px solid #ced4da',
+                                                borderRadius: '5px'
+                                            }}
+                                        />
+                                    </div>
+                                    <div style={{ marginBottom: '15px' }}>
+                                        <label style={{ display: 'block', marginBottom: '5px' }} htmlFor="imageUpload">Upload Image</label>
+                                        <input
+                                            type="file"
+                                            id="imageUpload"
+                                            accept="image/*"
+                                            onChange={(e) => handleImageUpload(e)}
+                                            style={{
+                                                width: '100%',
+                                                padding: '10px',
+                                                border: '1px solid #ced4da',
+                                                borderRadius: '5px'
+                                            }}
+                                        />
+                                    </div>
+                                    <button 
+                                        style={{
+                                            padding: '10px 20px',
+                                            border: 'none',
+                                            borderRadius: '5px',
+                                            cursor: 'pointer',
+                                            backgroundColor: '#007bff',
+                                            color: 'white'
+                                        }} 
+                                        onClick={uploadProduct}
+                                    >
+                                        Upload Product
+                                    </button>
+                                </>
+                            )}
                         </div>
                     )}
                     {section === 'products' && (
                         <div style={{ margin: '20px 0' }}>
-                            <h2>Your Products</h2>
+                            <h2>Your Product</h2>
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
-                                {products.map(product => (
-                                    <div key={product.product_id} style={{
-                                        border: '1px solid #ddd',
-                                        borderRadius: '8px',
-                                        padding: '15px',
-                                        backgroundColor: 'white'
-                                    }}>
-                                        <img src={product.image_url} alt={product.title} style={{
-                                            width: '100%',
-                                            height: '200px',
-                                            objectFit: 'cover',
-                                            borderRadius: '4px'
-                                        }} />
-                                        <h3>{product.title}</h3>
-                                        <p>Category: {product.category}</p>
-                                        <p>Price: ₹{product.price}</p>
-                                        <p>Location: {product.location}</p>
-                                        <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-                                            <button 
-                                                onClick={() => handleEditProduct(product)}
-                                                style={{
-                                                    padding: '8px 16px',
-                                                    backgroundColor: '#007bff',
-                                                    color: 'white',
-                                                    border: 'none',
-                                                    borderRadius: '4px',
-                                                    cursor: 'pointer'
-                                                }}
-                                            >
-                                                Edit
-                                            </button>
-                                            <button 
-                                                onClick={() => handleRemoveProduct(product.product_id)}
-                                                style={{
-                                                    padding: '8px 16px',
-                                                    backgroundColor: '#dc3545',
-                                                    color: 'white',
-                                                    border: 'none',
-                                                    borderRadius: '4px',
-                                                    cursor: 'pointer'
-                                                }}
-                                            >
-                                                Remove
-                                            </button>
+                                {products.length > 0 ? (
+                                    products.map(product => (
+                                        <div key={product.product_id} style={{
+                                            border: '1px solid #ddd',
+                                            borderRadius: '8px',
+                                            padding: '15px',
+                                            backgroundColor: 'white'
+                                        }}>
+                                            <img src={product.image_url} alt={product.title} style={{
+                                                width: '100%',
+                                                height: '200px',
+                                                objectFit: 'cover',
+                                                borderRadius: '4px'
+                                            }} />
+                                            <h3>{product.title}</h3>
+                                            <p>Category: {product.category}</p>
+                                            <p>Price: ₹{product.price}</p>
+                                            <p>Location: {product.location}</p>
+                                            <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                                                <button 
+                                                    onClick={() => handleEditProduct(product)}
+                                                    style={{
+                                                        padding: '8px 16px',
+                                                        backgroundColor: '#007bff',
+                                                        color: 'white',
+                                                        border: 'none',
+                                                        borderRadius: '4px',
+                                                        cursor: 'pointer'
+                                                    }}
+                                                >
+                                                    Edit
+                                                </button>
+                                                <button 
+                                                    onClick={() => handleRemoveProduct(product.product_id)}
+                                                    style={{
+                                                        padding: '8px 16px',
+                                                        backgroundColor: '#dc3545',
+                                                        color: 'white',
+                                                        border: 'none',
+                                                        borderRadius: '4px',
+                                                        cursor: 'pointer'
+                                                    }}
+                                                >
+                                                    Remove
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    ))
+                                ) : (
+                                    <p>You haven't added any product yet. Use the "Upload a New Product" section to add your product.</p>
+                                )}
                             </div>
 
                             {/* Edit Product Modal */}

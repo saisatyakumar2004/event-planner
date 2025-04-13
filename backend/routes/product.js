@@ -8,6 +8,14 @@ router.post('/add', async (req, res) => {
     const { vendor_email, category, title, location, ratings, price, image_url } = req.body;
 
     try {
+        // Check if vendor already has a product
+        const existingProduct = await Product.findOne({ vendor_email: req.body.vendor_email });
+        if (existingProduct) {
+            return res.status(400).json({ 
+                message: 'Vendor already has a product. Only one product per vendor is allowed.' 
+            });
+        }
+
         // Generate a unique product_id
         const product_id = uuidv4();
 

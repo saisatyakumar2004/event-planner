@@ -81,10 +81,15 @@ const VenueDetail = () => {
     }
 
     try {
+      // First fetch complete user data to get the phone number
+      const userResponse = await axios.get(`http://localhost:5000/api/user?email=${user.email}`);
+      const completeUserData = userResponse.data;
+
       const order_id = `${Date.now()}-${Math.floor(Math.random() * 1000)}`;
       const orderData = {
         order_id,
         customer_email: user.email,
+        customer_phone: completeUserData.phoneNumber, // Add this line
         vendor_email: venue.vendor_email || 'vendor@example.com',
         item_name: venue.title,
         item_price: venue.price,
@@ -100,6 +105,29 @@ const VenueDetail = () => {
       const response = await axios.post('http://localhost:5000/api/orders/addOrder', orderData);
 
       if (response.data) {
+        const emailData = {
+          email: venue.vendor_email || 'vendor@example.com',
+          eventDetails: {
+            eventDate: eventDetails.eventDate,
+            eventTime: eventDetails.eventTime,
+            eventLocation: venue.location,
+            eventName: eventDetails.eventName || venue.title,
+            specialInstructions: eventDetails.specialInstructions || 'No special instructions'
+          },
+          vendor: {
+            title: venue.title,
+            location: venue.location,
+            price: venue.price
+          },
+          client: {
+            name: `${completeUserData.firstName} ${completeUserData.lastName}`,
+            email: completeUserData.email,
+            phone: completeUserData.phoneNumber // Use phone number from complete user data
+          }
+        };
+
+        await axios.post('http://localhost:5000/api/otp/send-booking-confirmation', emailData);
+
         setShowModal(false);
         alert('Order placed successfully!');
       }

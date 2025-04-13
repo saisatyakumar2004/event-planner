@@ -12,11 +12,13 @@ const Profile = () => {
     const [orderHistory, setOrderHistory] = useState([]); // Constant for order history
     const [orderDetails, setOrderDetails] = useState([]);
     const [error, setError] = useState(null);
+    const [selectedOrder, setSelectedOrder] = useState(null);
+    const [showEventDetails, setShowEventDetails] = useState(false);
 
     const handleCancelOrder = async (orderId) => {
         try {
             // Make the API call to delete the order
-            const response = await fetch(`https://event-planner-y4fw.onrender.com/api/orders/deleteOrder/${orderId}`, {
+            const response = await fetch(`http://localhost:5000/api/orders/deleteOrder/${orderId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -36,6 +38,11 @@ const Profile = () => {
         } catch (error) {
             console.error('Error cancelling the order:', error);
         }
+    };
+
+    const handleViewEventDetails = (order) => {
+        setSelectedOrder(order);
+        setShowEventDetails(true);
     };
     
     useEffect(() => {
@@ -82,7 +89,7 @@ const Profile = () => {
     const updateProfile = async () => {
         const updatedUser = { firstName, lastName, email, phoneNumber };
         try {
-            const response = await fetch('https://event-planner-y4fw.onrender.com/api/user/updateProfile', {
+            const response = await fetch('http://localhost:5000/api/user/updateProfile', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -114,7 +121,7 @@ const Profile = () => {
             return;
         }
 
-        const response = await fetch('https://event-planner-y4fw.onrender.com/api/user/updatePassword', {
+        const response = await fetch('http://localhost:5000/api/user/updatePassword', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -262,19 +269,27 @@ const Profile = () => {
                                             </div>
                                             <div className="orderCardLower">
                                                 <span className="orderCardLeft">Item: {order.item_name}</span>
-                                                <button
-                                                    className={`orderButton ${
-                                                        order.accepted ? 'accepted' : order.rejected ? 'rejected' : 'requested'
-                                                    }`}
-                                                >
-                                                    {order.accepted ? 'Order Accepted' : order.rejected ? 'Order Rejected' : 'Requested'}
-                                                </button>
-                                                <button
-                                                    className="cancelOrderButton"
-                                                    onClick={() => handleCancelOrder(order.order_id)}
-                                                >
-                                                    Cancel Order
-                                                </button>
+                                                <div className="orderCardActions">
+                                                    <button
+                                                        className={`orderButton ${
+                                                            order.accepted ? 'accepted' : order.rejected ? 'rejected' : 'requested'
+                                                        }`}
+                                                    >
+                                                        {order.accepted ? 'Order Accepted' : order.rejected ? 'Order Rejected' : 'Requested'}
+                                                    </button>
+                                                    <button
+                                                        className="viewDetailsButton"
+                                                        onClick={() => handleViewEventDetails(order)}
+                                                    >
+                                                        View Details
+                                                    </button>
+                                                    <button
+                                                        className="cancelOrderButton"
+                                                        onClick={() => handleCancelOrder(order.order_id)}
+                                                    >
+                                                        Cancel Order
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     ))
@@ -286,6 +301,43 @@ const Profile = () => {
                     )}
                 </div>
             </div>
+
+            {/* Add Event Details Modal */}
+            {showEventDetails && selectedOrder && (
+                <div className="modalOverlay">
+                    <div className="modalContent">
+                        <h2>Event Details</h2>
+                        <div className="eventDetailsContainer">
+                            <div className="detailRow">
+                                <strong>Event Name:</strong>
+                                <span>{selectedOrder.eventDetails?.eventName || 'N/A'}</span>
+                            </div>
+                            <div className="detailRow">
+                                <strong>Event Date:</strong>
+                                <span>{selectedOrder.eventDetails?.eventDate || 'N/A'}</span>
+                            </div>
+                            <div className="detailRow">
+                                <strong>Event Time:</strong>
+                                <span>{selectedOrder.eventDetails?.eventTime || 'N/A'}</span>
+                            </div>
+                            <div className="detailRow">
+                                <strong>Event Location:</strong>
+                                <span>{selectedOrder.eventDetails?.eventLocation || 'N/A'}</span>
+                            </div>
+                            <div className="detailRow">
+                                <strong>Special Instructions:</strong>
+                                <p>{selectedOrder.eventDetails?.specialInstructions || 'No special instructions'}</p>
+                            </div>
+                        </div>
+                        <button 
+                            className="closeButton"
+                            onClick={() => setShowEventDetails(false)}
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
