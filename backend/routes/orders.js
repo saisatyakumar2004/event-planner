@@ -12,6 +12,21 @@ const generateOrderId = () => {
 // POST route to create a new order
 router.post('/addOrder', async (req, res) => {
   try {
+    // Check date availability first
+    const bookingCheck = await fetch(`${req.protocol}://${req.get('host')}/api/bookings/check-availability`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        productId: req.body.venue_id || req.body.item_name,
+        date: req.body.eventDetails.eventDate
+      })
+    });
+
+    const availability = await bookingCheck.json();
+    if (!availability.available) {
+      return res.status(400).json({ message: 'Selected date is not available' });
+    }
+
     const orderData = {
       ...req.body,
       accepted: false,
@@ -20,6 +35,17 @@ router.post('/addOrder', async (req, res) => {
 
     const newOrder = new Order(orderData);
     const savedOrder = await newOrder.save();
+
+    // Add booking after order is saved
+    await fetch(`${req.protocol}://${req.get('host')}/api/bookings/add`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        productId: req.body.venue_id || req.body.item_name,
+        date: req.body.eventDetails.eventDate,
+        orderId: savedOrder.order_id
+      })
+    });
 
     // Store the string ID instead of ObjectId
     const orderId = savedOrder.order_id;
@@ -100,15 +126,25 @@ router.delete('/deleteOrder/:orderId', async (req, res) => {
   const { orderId } = req.params; // Extract order ID from request parameters
 
   try {
-    // Find and delete the order with the given order ID
-    const deletedOrder = await Order.findOneAndDelete({ order_id: orderId });
-
-    // Check if the order was found and deleted
-    if (!deletedOrder) {
+    const order = await Order.findOne({ order_id: orderId });
+    if (!order) {
       return res.status(404).json({ message: 'Order not found' });
     }
 
-    res.status(200).json({ message: 'Order deleted successfully', order: deletedOrder });
+    // Remove booking first
+    await fetch(`${req.protocol}://${req.get('host')}/api/bookings/remove`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        productId: order.venue_id || order.item_name,
+        orderId: order.order_id
+      })
+    });
+
+    // Delete the order
+    await Order.findOneAndDelete({ order_id: orderId });
+    
+    res.status(200).json({ message: 'Order deleted successfully' });
   } catch (error) {
     res.status(500).json({
       message: 'Error deleting order',
