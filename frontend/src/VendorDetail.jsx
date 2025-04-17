@@ -23,11 +23,67 @@ const VendorDetail = () => {
     eventLocation: '',
     specialInstructions: '',
   });
+  const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
+  const [bookedDates, setBookedDates] = useState([]);
+  const [showBookedDates, setShowBookedDates] = useState(false);
 
   const validateDateTime = (date, time) => {
     const now = new Date();
     const selectedDateTime = new Date(`${date}T${time}`);
     return selectedDateTime > now;
+  };
+
+  const checkDateAvailability = async (date) => {
+    try {
+      if (!vendor) throw new Error('Vendor information not available');
+
+      const response = await fetch('http://localhost:5000/api/orders/check-venue-availability', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          venueId: vendor.product_id || vendor.title,
+          date,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to check availability');
+      }
+
+      const data = await response.json();
+      return data.isAvailable;
+    } catch (error) {
+      console.error('Error checking availability:', error);
+      return true; // Default to true to avoid blocking date selection on error
+    }
+  };
+
+  const fetchBookedDates = async () => {
+    setIsCheckingAvailability(true);
+    try {
+      if (!vendor) throw new Error('Vendor information not available');
+      const vendorId = vendor.product_id || vendor.title;
+
+      const response = await fetch(
+        `http://localhost:5000/api/orders/venue-booked-dates/${encodeURIComponent(vendorId)}`
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch booked dates');
+      }
+
+      const data = await response.json();
+      setBookedDates(data.bookedDates || []);
+      setShowBookedDates(true);
+    } catch (error) {
+      console.error('Error fetching booked dates:', error);
+      setBookedDates([]);
+      alert('Unable to fetch booked dates. Please try again later.');
+    } finally {
+      setIsCheckingAvailability(false);
+    }
   };
 
   useEffect(() => {
@@ -86,12 +142,25 @@ const VendorDetail = () => {
     setShowModal(true);
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChange = async (e) => {
     const { name, value } = e.target;
-    setEventDetails({
-      ...eventDetails,
+
+    if (name === 'eventDate') {
+      try {
+        const isAvailable = await checkDateAvailability(value);
+        if (!isAvailable) {
+          alert('This date is already booked. Please select another date.');
+          return;
+        }
+      } catch (error) {
+        console.error('Date availability check failed:', error);
+      }
+    }
+
+    setEventDetails((prev) => ({
+      ...prev,
       [name]: value,
-    });
+    }));
   };
 
   const handleReviewInputChange = (e) => {
@@ -426,9 +495,79 @@ const VendorDetail = () => {
 
             <div style={{
               display: 'flex',
+              flexDirection: 'column',
               gap: '15px',
               marginTop: '20px'
             }}>
+              <button 
+                onClick={fetchBookedDates}
+                disabled={isCheckingAvailability}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  marginTop: '10px',
+                  backgroundColor: '#007bff',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '5px',
+                  cursor: isCheckingAvailability ? 'wait' : 'pointer',
+                  opacity: isCheckingAvailability ? 0.7 : 1
+                }}
+              >
+                {isCheckingAvailability ? 'Checking...' : 'Check Availability'}
+              </button>
+
+              {showBookedDates && (
+                <div style={{
+                  marginTop: '15px',
+                  padding: '15px',
+                  backgroundColor: '#f8f9fa',
+                  borderRadius: '5px',
+                  border: '1px solid #dee2e6'
+                }}>
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: '10px'
+                  }}>
+                    <h4 style={{ margin: 0 }}>Booked Dates</h4>
+                    <button 
+                      onClick={() => setShowBookedDates(false)}
+                      style={{
+                        border: 'none',
+                        background: 'none',
+                        fontSize: '20px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      ×
+                    </button>
+                  </div>
+                  {bookedDates.length > 0 ? (
+                    <ul style={{ 
+                      listStyle: 'none', 
+                      padding: 0,
+                      margin: 0 
+                    }}>
+                      {bookedDates.map((date, index) => (
+                        <li key={index} style={{
+                          padding: '5px',
+                          marginBottom: '5px',
+                          backgroundColor: '#fee2e2',
+                          borderRadius: '3px',
+                          color: '#dc2626'
+                        }}>
+                          {new Date(date).toLocaleDateString()}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p style={{ margin: 0, color: '#16a34a' }}>No dates are currently booked</p>
+                  )}
+                </div>
+              )}
+
               <button 
                 style={{
                   flex: 1,
