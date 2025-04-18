@@ -4,17 +4,16 @@
     width: 800px;
     background: #fff;
     border-radius: 10px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
     overflow: hidden;
-    margin-left: auto;
-    margin-right: auto; /* Center horizontally on larger screens */
+    margin: 20px auto;
 }
 
 /* For small devices (mobile), reduce margin to fit the screen */
 @media (max-width: 600px) {
-    .register-container {
-        width: 90%; /* Adjust the width to be smaller */
-        margin-left: 10px; /* Add a small left margin */
+    .vendor-register-container {
+        width: 90%;
+        margin: 10px;
     }
 }
 
@@ -34,7 +33,6 @@
     }
 }
 
-
 .left-side {
     flex: 1;
     padding: 20px;
@@ -45,11 +43,14 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 20px;
 }
 
 .landscape-image {
-    max-width: 100%;
-    height: auto; /* Ensure the image scales properly */
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .form-group {
@@ -61,8 +62,8 @@
     padding: 10px; /* Padding inside input */
     border: 1px solid #ccc; /* Border style */
     border-radius: 5px; /* Rounded corners */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Shadow effect */
-    transition: border-color 0.3s; /* Smooth transition for border color */
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Updated shadow effect */
+    transition: border-color 0.3s ease; /* Updated transition */
 }
 
 .input-field:focus {

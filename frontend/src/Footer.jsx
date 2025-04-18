@@ -1,28 +1,3 @@
-// import React from 'react';
-// import "bootstrap/dist/css/bootstrap.css";
-// import "bootstrap/dist/js/bootstrap.bundle";
-
-// function Footer() {
-//     return (
-//         <footer className="footer bg-dark text-white py-3">
-//             <div className="container text-center">
-//                 <p className="mb-1">&copy; 2024 Event Planner. All rights reserved.</p>
-//                 <p className="mb-0">
-//                     <a href="mailto:admin@eventplanner.com" className="text-white me-3">
-//                         admin@eventplanner.com
-//                     </a> 
-//                     | 
-//                     <a href="tel:+91 9876543210" className="text-white ms-3">
-//                         +91 9876543210
-//                     </a>
-//                 </p>
-//             </div>
-//         </footer>
-//     );
-// }
-
-// export default Footer;
-
 import React from 'react';
 import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
 
@@ -46,8 +21,6 @@ function Footer() {
           <ul>
             <li><a href="/about">About Us</a></li>
             <li><a href="/services">Services</a></li>
-            {/* <li><a href="/gallery">Gallery</a></li>
-            <li><a href="/blog">Blog</a></li> */}
             <li><a href="/contact">Contact</a></li>
           </ul>
         </div>
@@ -79,13 +52,6 @@ function Footer() {
               123 Event Street, Party City
             </p>
           </div>
-          {/* <div className="newsletter">
-            <h3>Subscribe</h3>
-            <form>
-              <input type="email" placeholder="Enter your email" required />
-              <button type="submit">Subscribe</button>
-            </form>
-          </div> */}
         </div>
       </div>
       
@@ -232,56 +198,6 @@ function Footer() {
 
         .contact-info a:hover {
           color: #3f8cf3;
-        }
-
-        /* Newsletter */
-        .newsletter {
-          margin-top: 2rem;
-        }
-
-        .newsletter h3 {
-          margin-bottom: 1rem;
-        }
-
-        .newsletter form {
-          display: flex;
-          flex-direction: column;
-          gap: 0.75rem;
-        }
-
-        @media (min-width: 640px) {
-          .newsletter form {
-            flex-direction: row;
-          }
-        }
-
-        .newsletter input {
-          flex: 1;
-          padding: 0.75rem;
-          border: none;
-          border-radius: 4px;
-          background: rgba(255, 255, 255, 0.1);
-          color: #ffffff;
-          outline: none;
-        }
-
-        .newsletter input::placeholder {
-          color: #aaaaaa;
-        }
-
-        .newsletter button {
-          padding: 0.75rem 1.5rem;
-          background: #3f8cf3;
-          color: white;
-          border: none;
-          border-radius: 4px;
-          cursor: pointer;
-          transition: background 0.3s ease;
-          font-weight: 600;
-        }
-
-        .newsletter button:hover {
-          background: #2a7de1;
         }
 
         /* Footer Bottom */

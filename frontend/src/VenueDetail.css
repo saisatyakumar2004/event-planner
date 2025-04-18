@@ -2,8 +2,9 @@
 
 .venue-detail-container {
   max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
+  margin: auto;
+  padding: 30px;
+  background-color: #ffffff;
   font-family: 'Roboto', sans-serif;
   display: flex;
   flex-direction: column;
@@ -18,10 +19,9 @@
 
 .venue-detail-main {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 30px;
   flex-wrap: wrap;
+  gap: 30px;
+  justify-content: center;
 }
 
 .venue-detail-image {
@@ -42,11 +42,22 @@
   min-width: 300px;
   background-color: #fff;
   padding: 25px;
-  border-radius: 8px;
+  border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   display: flex;
   flex-direction: column;
   gap: 15px;
+  transition: transform 0.3s ease;
+}
+
+.venue-detail-card button {
+  border-radius: 5px;
+  padding: 12px;
+  transition: background-color 0.3s ease;
+}
+
+.venue-detail-card button:hover {
+  background-color: #e04a50;
 }
 
 .venue-title {
@@ -149,6 +160,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  animation: fadeInModal 0.3s ease;
 }
 
 .modal-content {
@@ -162,6 +174,11 @@
 }
 
 @keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInModal {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
 }
@@ -292,5 +309,6 @@
 @media (max-width: 768px) {
   .venue-detail-main {
     flex-direction: column;
+    align-items: center;
   }
 }

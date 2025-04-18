@@ -6,15 +6,14 @@
     border-radius: 10px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-    margin-left: auto;
-    margin-right: auto; /* Center horizontally on larger screens */
+    margin: 20px auto;
 }
 
 /* For small devices (mobile), reduce margin to fit the screen */
 @media (max-width: 600px) {
     .register-container {
         width: 90%; /* Adjust the width to be smaller */
-        margin-left: 10px; /* Add a small left margin */
+        padding: 10px;
     }
 }
 
@@ -34,16 +33,10 @@
     }
 }
 
-.left-side {
-    flex: 1;
-    padding: 20px;
-}
-
+.left-side,
 .right-side {
     flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    padding: 30px;
 }
 
 .landscape-image {
@@ -56,12 +49,13 @@
 }
 
 .input-field {
-    width: 100%; /* Make the input field take full width */
-    padding: 10px; /* Padding inside input */
+    width: 100%;
+    padding: 12px; /* Updated padding */
     border: 1px solid #ccc; /* Border style */
     border-radius: 5px; /* Rounded corners */
+    margin-bottom: 20px; /* Added margin-bottom */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Shadow effect */
-    transition: border-color 0.3s; /* Smooth transition for border color */
+    transition: border-color 0.3s ease; /* Updated transition */
 }
 
 .input-field:focus {
@@ -71,13 +65,14 @@
 
 .submit-button {
     width: 100%; /* Match button width with input */
-    padding: 10px; /* Padding for button */
+    padding: 12px; /* Updated padding */
     background-color: #800080; /* Button background color */
     color: #fff; /* Button text color */
     border: none; /* Remove border */
     border-radius: 5px; /* Rounded corners for button */
+    font-size: 16px; /* Added font size */
     cursor: pointer; /* Pointer cursor on hover */
-    transition: background-color 0.3s; /* Smooth transition for background */
+    transition: background-color 0.3s ease; /* Updated transition */
 }
 
 .submit-button:hover {

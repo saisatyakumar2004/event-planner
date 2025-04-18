@@ -43,6 +43,14 @@ body {
   display: flex;
   flex-direction: column;
   gap: 15px;
+  border-radius: 8px;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease;
+}
+.vendor-details-card:hover {
+  transform: translateY(-2px);
 }
 .vendor-title {
   font-size: 2rem;
@@ -113,6 +121,11 @@ body {
 .book-now-button:hover {
   background-color: #e04a50;
 }
+.button-group button {
+  border-radius: 5px;
+  padding: 10px;
+  transition: background-color 0.3s ease;
+}
 
 /* Booked dates modal */
 .booked-dates-modal {
@@ -157,12 +170,16 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  animation: fadeInModal 0.3s;
+  animation: zoomInModal 0.3s ease;
   z-index: 1000;
 }
 @keyframes fadeInModal {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+@keyframes zoomInModal {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
 
 /* Modal content */
@@ -177,10 +194,6 @@ body {
   display: flex;
   flex-direction: column;
   gap: 15px;
-}
-@keyframes zoomInModal {
-  from { transform: scale(0.9); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
 }
 .modal-title {
   text-align: center;
@@ -270,5 +283,8 @@ body {
   }
   .vendor-image-section, .vendor-details-card {
     width: 100%;
+  }
+  .vendor-details-card {
+    padding: 15px;
   }
 }

@@ -5,16 +5,18 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
 }
 
 .containerVendorDashboard {
     display: flex;
-    background-color: white;
+    background-color: #fff;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    height: 100vh;
-    width: 800vh;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 1200px;
+    height: 90vh;
+    margin: 20px;
 }
 
 .sidebarVendorDashboard {
@@ -22,8 +24,8 @@
     padding: 20px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    width: 200px;
+    align-items: stretch;
+    width: 220px;
     color: white;
 }
 
@@ -47,13 +49,12 @@
 }
 
 .sidebarVendorDashboard button {
-    background-color: transparent;
+    background: transparent;
     border: none;
     color: white;
-    padding: 10px 0;
-    width: 100%;
-    cursor: pointer;
+    padding: 10px;
     text-align: left;
+    transition: background 0.3s ease;
 }
 
 .sidebarVendorDashboard button:hover {
@@ -62,7 +63,7 @@
 
 .contentVendorDashboard {
     flex: 1;
-    padding: 20px;
+    padding: 30px;
     overflow-y: auto;
 }
 
@@ -145,7 +146,6 @@
     width: calc(33% - 20px);
 }
 
-
 .is-verified-button {
     padding: 10px 20px;
     border: none;
@@ -153,19 +153,19 @@
     font-size: 16px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-  }
-  
-  .is-verified-button.verified {
+}
+
+.is-verified-button.verified {
     background-color: #28a745; /* Green for Verified */
     color: white;
-  }
-  
-  .is-verified-button.not-verified {
+}
+
+.is-verified-button.not-verified {
     background-color: #dc3545; /* Red for Not Verified */
     color: white;
-  }
+}
 
-  .emailDisplay {
+.emailDisplay {
     border: 1px solid #ccc; /* Same as input border */
     padding: 8px; /* Same padding as input */
     background-color: #f9f9f9; /* Light background */
@@ -173,4 +173,19 @@
     cursor: not-allowed; /* Change cursor to indicate it's untouchable */
     color: #333; /* Text color */
     /* Add any other styles to match your theme */
+}
+
+@media (max-width: 992px) {
+    .containerVendorDashboard {
+        flex-direction: column;
+        height: auto;
+    }
+    .sidebarVendorDashboard {
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-around;
+    }
+    .contentVendorDashboard {
+        padding: 20px;
+    }
 }
