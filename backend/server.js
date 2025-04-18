@@ -9,9 +9,10 @@ const vendor = require('./routes/vendor');
 const orderVendorRoutes = require('./routes/order-vendor');
 const productRoutes = require('./routes/product');
 const otpRoutes = require('./routes/otp'); // Import OTP routes
-const reviewRoutes = require('./routes/reviews');
 const bookingRoutes = require('./routes/bookings'); // Import booking routes
 require('dotenv').config();
+
+const reviewRoutes = require('./routes/reviews');
 
 const app = express();
 
@@ -32,9 +33,9 @@ const startServer = async () => {
         app.use('/api/vendor', vendor);
         app.use('/api/product', productRoutes);
         app.use('/api/otp', otpRoutes);
-        app.use('/api/reviews', reviewRoutes);
+       
         app.use('/api/bookings', bookingRoutes);
-
+        app.use('/api/reviews', reviewRoutes);
         // Initialize order vendor routes
         orderVendorRoutes(app);
 

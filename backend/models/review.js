@@ -1,15 +1,37 @@
 const mongoose = require('mongoose');
 
 const reviewSchema = new mongoose.Schema({
-  productId: { type: String, required: true },
-  orderId: { type: String, required: true },
-  userId: { type: String, required: true },
-  userName: { type: String, required: true },
-  rating: { type: Number, required: true, min: 1, max: 5 },
-  comment: { type: String, required: true }, // Ensure comment is required
-  date: { type: Date, required: true } // Ensure date is required
-});
+    orderId: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    productId: {  // Changed from venueId
+        type: String,
+        required: true
+    },
+    userId: {
+        type: String,
+        required: true
+    },
+    userName: {
+        type: String,
+        required: true
+    },
+    comment: {    // Changed from review
+        type: String,
+        required: true
+    },
+    rating: {
+        type: Number,
+        required: true,
+        min: 1,
+        max: 5
+    },
+    date: {
+        type: Date,
+        default: Date.now
+    }
+}, { timestamps: true });
 
-const Review = mongoose.model('Review', reviewSchema);
-
-module.exports = Review;
+module.exports = mongoose.model('Review', reviewSchema);

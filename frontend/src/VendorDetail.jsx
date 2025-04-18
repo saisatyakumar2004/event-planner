@@ -172,70 +172,40 @@ const VendorDetail = () => {
   };
 
   const handleSubmitReview = async () => {
-    if (!reviewInput.orderId) {
-      alert('Please enter your order ID');
-      return;
-    }
-  
     try {
-      const orderResponse = await fetch(`http://localhost:5000/api/orders/${reviewInput.orderId}`);
-      
-      if (!orderResponse.ok) {
-        const errorData = await orderResponse.json().catch(() => ({}));
-        throw new Error(errorData.message || 'Order not found or invalid order ID');
+      if (!vendor?.product_id) {
+        throw new Error('Vendor information not available');
       }
-  
-      const orderData = await orderResponse.json();
-      
-      if (orderData.customer_email !== user.email) {
-        alert('This order does not belong to you');
-        return;
-      }
-  
-      if (orderData.item_name !== vendor.title) {
-        alert('This order is not for this product');
-        return;
-      }
-  
-      const checkReviewResponse = await fetch(
-        `http://localhost:5000/api/reviews/check?productId=${id}&orderId=${reviewInput.orderId}`
-      );
-      
-      if (!checkReviewResponse.ok) {
-        const errorData = await checkReviewResponse.json().catch(() => ({}));
-        throw new Error(errorData.message || 'Failed to check review status');
-      }
-  
-      const checkReviewData = await checkReviewResponse.json();
-      
-      if (checkReviewData.exists) {
-        alert('You have already reviewed this order');
-        return;
-      }
-  
-      const reviewResponse = await fetch('http://localhost:5000/api/reviews/add', {
+
+      // Use the email address directly if no name is available
+      const displayName = user.name || 
+                       (user.firstName && user.lastName ? 
+                         `${user.firstName} ${user.lastName}` : 
+                         user.email); // Use full email address directly
+
+      const response = await fetch('http://localhost:5000/api/reviews/add', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          productId: id,
+          productId: vendor.product_id,
           orderId: reviewInput.orderId,
           userId: user.email,
-          userName: user.name,
+          userName: displayName, // Use the full email if no name is available
           rating: reviewInput.rating,
           comment: reviewInput.comment,
           date: new Date().toISOString()
         }),
       });
-  
-      if (!reviewResponse.ok) {
-        const errorData = await reviewResponse.json().catch(() => ({}));
+
+      if (!response.ok) {
+        const errorData = await response.json();
         throw new Error(errorData.message || 'Failed to submit review');
       }
-  
+
       const newReview = {
-        userName: user.name,
+        userName: displayName,
         rating: reviewInput.rating,
         comment: reviewInput.comment,
         date: new Date().toISOString()
@@ -249,7 +219,7 @@ const VendorDetail = () => {
         comment: ''
       });
       alert('Thank you for your review!');
-  
+
     } catch (error) {
       console.error('Review submission error:', {
         error: error.message,
@@ -418,7 +388,40 @@ const VendorDetail = () => {
           )}
         </div>
       </div>
-      
+
+      {/* Reviews Section */}
+      <div className="reviews-section">
+        <h2>Reviews</h2>
+        <button 
+          onClick={() => user ? setShowReviewModal(true) : navigate('/login')}
+          className="write-review-btn"
+        >
+          Write a Review
+        </button>
+        
+        <div className="reviews-list">
+          {reviews.length > 0 ? (
+            reviews.map((review) => (
+              <div key={review._id} className="review-card">
+                <div className="review-header">
+                  <span className="reviewer-name">{review.userName}</span>
+                  <div className="review-rating">
+                    {'★'.repeat(review.rating)}
+                    {'☆'.repeat(5 - review.rating)}
+                  </div>
+                </div>
+                <p className="review-comment">{review.comment}</p>
+                <span className="review-date">
+                  {new Date(review.date).toLocaleDateString()}
+                </span>
+              </div>
+            ))
+          ) : (
+            <p>No reviews yet</p>
+          )}
+        </div>
+      </div>
+
       {showModal && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -459,8 +462,27 @@ const VendorDetail = () => {
       )}
       
       {showReviewModal && (
-        <div className="modal-overlay review-modal">
-          <div className="modal-content">
+        <div className="modal-overlay" style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000
+        }}>
+          <div className="modal-content" style={{
+            background: 'white',
+            padding: '2rem',
+            borderRadius: '8px',
+            width: '90%',
+            maxWidth: '500px',
+            position: 'relative',
+            animation: 'fadeIn 0.3s ease'
+          }}>
             <h2 className="modal-title">Write a Review</h2>
             <form>
               <div className="form-group">
@@ -474,7 +496,8 @@ const VendorDetail = () => {
                   {[1, 2, 3, 4, 5].map(star => (
                     <button key={star} type="button"
                       onClick={() => setReviewInput({ ...reviewInput, rating: star })}
-                      className={`star-button ${star <= reviewInput.rating ? 'star-filled' : ''}`}>
+                      className={`star-button ${star <= reviewInput.rating ? 'star-filled' : ''}`}
+                      style={{ fontSize: '24px', color: star <= reviewInput.rating ? '#ffd700' : '#ccc' }}>
                       ★
                     </button>
                   ))}
@@ -486,10 +509,10 @@ const VendorDetail = () => {
                   placeholder="Share your experience..." required className="form-textarea" />
               </div>
               <div className="modal-buttons">
-                <button type="button" onClick={() => setShowReviewModal(false)} className="modal-cancel-btn">Cancel</button>
-                <button type="button" onClick={handleSubmitReview} className="modal-submit-btn">
-                  Submit Review
-                </button>
+                <button type="button" onClick={() => setShowReviewModal(false)} className="modal-cancel-btn"
+                  style={{ backgroundColor: '#dc3545', color: 'white', marginRight: '10px' }}>Cancel</button>
+                <button type="button" onClick={handleSubmitReview} className="modal-submit-btn"
+                  style={{ backgroundColor: '#28a745', color: 'white' }}>Submit Review</button>
               </div>
             </form>
           </div>

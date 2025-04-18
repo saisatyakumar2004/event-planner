@@ -1,44 +1,73 @@
 const express = require('express');
 const router = express.Router();
-const Review = require('../models/review');
-const Order = require('../models/Order'); // Assuming you have an Order model
+const Review = require('../models/review'); // Note the capital R
+const Order = require('../models/Order');
 
-// Get reviews for a product
-router.get('/:productId', async (req, res) => {
+// Add a review
+router.post('/add', async (req, res) => {
   try {
-    const reviews = await Review.find({ productId: req.params.productId });
-    res.json({ reviews });
+    console.log('Received review data:', req.body);
+    const { orderId, productId, userId, userName, rating, comment } = req.body;
+
+    // Validate required fields
+    if (!orderId || !productId || !userId || !userName || !rating || !comment) {
+      return res.status(400).json({ 
+        message: 'Missing required fields',
+        required: ['orderId', 'productId', 'userId', 'userName', 'rating', 'comment']
+      });
+    }
+
+    // Check if order exists and belongs to the user
+    const order = await Order.findOne({ order_id: orderId });
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+    
+    if (order.customer_email !== userId) {
+      return res.status(403).json({ message: 'This order does not belong to you' });
+    }
+
+    const review = new Review({
+      orderId,
+      productId,
+      userId,
+      userName,
+      rating,
+      comment,
+      date: new Date()
+    });
+
+    await review.save();
+    console.log('Review saved:', review);
+    res.status(201).json(review);
   } catch (error) {
+    console.error('Error adding review:', error);
     res.status(500).json({ message: error.message });
   }
 });
 
-// Add a new review
-router.post('/add', async (req, res) => {
+// Get reviews for a product
+router.get('/:productId', async (req, res) => {
   try {
-    // Verify the order exists and belongs to the user
-    const order = await Order.findOne({ 
-      _id: req.body.order_id,
-      customer_email: req.body.userId 
-    });
-    
-    if (!order) {
-      return res.status(400).json({ message: 'Invalid order ID or order does not belong to you' });
-    }
-
-    const newReview = new Review({
-      productId: req.body.productId,
-      orderId: req.body.orderId,
-      userId: req.body.userId,
-      userName: req.body.userName,
-      rating: req.body.rating,
-      comment: req.body.comment
-    });
-
-    const savedReview = await newReview.save();
-    res.status(201).json(savedReview);
+    console.log('Fetching reviews for product:', req.params.productId);
+    const reviews = await Review.find({ productId: req.params.productId })
+      .sort({ date: -1 });
+    console.log('Found reviews:', reviews);
+    res.json({ reviews });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error('Error fetching reviews:', error);
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Check if user has already reviewed
+router.get('/check', async (req, res) => {
+  try {
+    const { productId, orderId } = req.query;
+    const review = await Review.findOne({ productId, orderId });
+    res.json({ exists: !!review });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 });
 
