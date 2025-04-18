@@ -148,7 +148,7 @@ const VendorDashboard = () => {
     const updateProfile = async () => {
         const updatedVendor = { name, vendor_email, phone, isVerified };
         try {
-            const response = await fetch('https://event-planner-y4fw.onrender.com/api/vendor/updateProfile', {
+            const response = await fetch('http://localhost:5000/api/vendor/updateProfile', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -180,7 +180,7 @@ const VendorDashboard = () => {
             return;
         }
 
-        const response = await fetch('https://event-planner-y4fw.onrender.com/api/vendor/updatePassword', {
+        const response = await fetch('http://localhost:5000/api/vendor/updatePassword', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

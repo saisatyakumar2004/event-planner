@@ -14,7 +14,7 @@ const ForgotPasswordvendor = () => {
     const handleRequestOTP = async (e) => {
         e.preventDefault();
         try {
-            const { data } = await axios.post('https://event-planner-y4fw.onrender.com/api/vendorauth/forgot-passwordvendor', { vendor_email });
+            const { data } = await axios.post('http://localhost:5000/api/vendorauth/forgot-passwordvendor', { vendor_email });
             setMessage(data.msg);
             setStep(2);
         } catch (error) {
@@ -25,7 +25,7 @@ const ForgotPasswordvendor = () => {
     const handleResetPassword = async (e) => {
         e.preventDefault();
         try {
-            const { data } = await axios.post('https://event-planner-y4fw.onrender.com/api/vendorauth/reset-password', { vendor_email, otp, newPassword });
+            const { data } = await axios.post('http://localhost:5000/api/vendorauth/reset-password', { vendor_email, otp, newPassword });
             setMessage(data.msg);
             if (data.msg === 'Password reset successfully') {
                 navigate('/vendor-login');

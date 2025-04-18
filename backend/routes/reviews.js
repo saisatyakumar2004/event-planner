@@ -18,7 +18,7 @@ router.post('/add', async (req, res) => {
   try {
     // Verify the order exists and belongs to the user
     const order = await Order.findOne({ 
-      _id: req.body.orderId,
+      _id: req.body.order_id,
       customer_email: req.body.userId 
     });
     

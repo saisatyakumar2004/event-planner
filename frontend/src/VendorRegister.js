@@ -298,7 +298,7 @@ const VendorRegister = () => {
     // Step 1: Send OTP to the email
     const sendOtp = async () => {
         try {
-            const response = await axios.post('https://event-planner-y4fw.onrender.com/api/otp/generate', { email: vendor_email });
+            const response = await axios.post('http://localhost:5000/api/otp/generate', { email: vendor_email });
             if (response.data.success) {
                 setIsOtpSent(true);
                 setMessage('OTP sent to your email address.');
@@ -313,7 +313,7 @@ const VendorRegister = () => {
     // Step 2: Verify the OTP
     const verifyOtp = async () => {
         try {
-            const response = await axios.post('https://event-planner-y4fw.onrender.com/api/otp/verify', { email: vendor_email, otp });
+            const response = await axios.post('http://localhost:5000/api/otp/verify', { email: vendor_email, otp });
             if (response.data.success) {
                 setIsOtpVerified(true);
                 setMessage('OTP verified successfully! You can now complete the registration.');
@@ -334,7 +334,7 @@ const VendorRegister = () => {
         }
 
         try {
-            const response = await axios.post('https://event-planner-y4fw.onrender.com/api/vendorauth/register', {
+            const response = await axios.post('http://localhost:5000/api/vendorauth/register', {
                 vendor_email,
                 password,
                 name,

@@ -26,10 +26,10 @@ const AuthForm = () => {
 
     try {
       if (isSignIn) {
-        const response = await axios.post('https://event-planner-y4fw.onrender.com/api/auth/login', formData);
+        const response = await axios.post('http://localhost:5000/api/auth/login', formData);
         console.log('Login Successful:', response.data);
       } else {
-        const response = await axios.post('https://event-planner-y4fw.onrender.com/api/auth/register', formData);
+        const response = await axios.post('http://localhost:5000/api/auth/register', formData);
         console.log('Registration Successful:', response.data);
       }
     } catch (err) {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import "./VenueDetail.css"; // new CSS for modern design
 
 const VenueDetail = () => {
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ const VenueDetail = () => {
   const [bookedDates, setBookedDates] = useState([]);
   const [showBookedDates, setShowBookedDates] = useState(false);
   const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validateDateTime = (date, time) => {
     const now = new Date();
@@ -166,6 +168,7 @@ const VenueDetail = () => {
   };
 
   const handleSubmit = async () => {
+    setIsSubmitting(true);
     try {
       // Validate date and time
       if (!validateDateTime(eventDetails.eventDate, eventDetails.eventTime)) {
@@ -232,216 +235,85 @@ const VenueDetail = () => {
         name: error.name
       });
       alert(`Error creating order: ${error.message || 'Please try again'}`);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   if (loading) {
-    return <h2 style={{ textAlign: 'center', padding: '20px' }}>Loading...</h2>;
+    return <h2 className="loading-text">Loading...</h2>;
   }
 
   if (error) {
-    return <h2 style={{ textAlign: 'center', padding: '20px', color: 'red' }}>{error}</h2>;
+    return <h2 className="error-text">{error}</h2>;
   }
 
   if (!venue) {
-    return <h2 style={{ textAlign: 'center', padding: '20px' }}>Venue not found</h2>;
+    return <h2 className="not-found-text">Venue not found</h2>;
   }
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '20px',
-      padding: '20px',
-      maxWidth: '1200px',
-      margin: '0 auto'
-    }}>
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'flex-start',
-        gap: '30px',
-        flexDirection: window.innerWidth <= 768 ? 'column' : 'row'
-      }}>
+    <div className="venue-detail-container">
+      <div className="venue-detail-main">
         {/* Image Section */}
-        <div style={{
-          width: window.innerWidth <= 768 ? '100%' : '50%'
-        }}>
+        <div className="venue-detail-image">
           <img 
             src={venue.image_url} 
             alt={venue.title} 
-            style={{
-              width: '100%',
-              height: 'auto',
-              objectFit: 'cover',
-              borderRadius: '8px',
-              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
-            }}
+            className="venue-image"
           />
         </div>
 
         {/* Details Card */}
-        <div style={{
-          width: window.innerWidth <= 768 ? '100%' : '45%',
-          background: 'rgba(255, 255, 255, 0.95)',
-          padding: '25px',
-          borderRadius: '8px',
-          boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '15px'
-        }}>
-          <h2 style={{
-            margin: 0,
-            fontSize: '1.8rem',
-            color: '#333'
-          }}>{venue.title}</h2>
-          
-          <p style={{
-            margin: '5px 0',
-            color: '#666'
-          }}>{venue.location}</p>
-          
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '5px',
-            color: '#ffc107',
-            fontWeight: 'bold'
-          }}>
+        <div className="venue-detail-card">
+          <h2 className="venue-title">{venue.title}</h2>
+          <p className="venue-location">{venue.location}</p>
+          <div className="venue-rating">
             <span>{venue.ratings} ⭐</span>
           </div>
-          
-          {/* Price Card */}
-          <div style={{
-            backgroundColor: '#f9f9f9',
-            padding: '15px',
-            borderRadius: '8px',
-            textAlign: 'center',
-            margin: '15px 0'
-          }}>
-            <h3 style={{
-              marginBottom: '10px',
-              color: '#333'
-            }}>Starting Price</h3>
-            <p style={{ margin: '5px 0' }}>
+
+          <div className="price-card">
+            <h3>Starting Price</h3>
+            <p>
               Total Price: {venue.price ? `INR ${venue.price}` : 'Price not available'}
             </p>
-            <p style={{
-              color: '#ff5a5f',
-              fontWeight: 'bold',
-              marginTop: '5px'
-            }}>Special deal!!</p>
+            <p className="special-deal">Special deal!!</p>
           </div>
 
           <button 
             onClick={fetchBookedDates}
             disabled={isCheckingAvailability}
-            style={{
-              width: '100%',
-              padding: '12px',
-              marginTop: '10px',
-              backgroundColor: '#007bff',
-              color: 'white',
-              border: 'none',
-              borderRadius: '5px',
-              cursor: isCheckingAvailability ? 'wait' : 'pointer',
-              opacity: isCheckingAvailability ? 0.7 : 1
-            }}
+            className="button button-check"
           >
             {isCheckingAvailability ? 'Checking...' : 'Check Availability'}
           </button>
 
           {showBookedDates && (
-            <div style={{
-              marginTop: '15px',
-              padding: '15px',
-              backgroundColor: '#f8f9fa',
-              borderRadius: '5px',
-              border: '1px solid #dee2e6'
-            }}>
-              <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: '10px'
-              }}>
-                <h4 style={{ margin: 0 }}>Booked Dates</h4>
-                <button 
-                  onClick={() => setShowBookedDates(false)}
-                  style={{
-                    border: 'none',
-                    background: 'none',
-                    fontSize: '20px',
-                    cursor: 'pointer'
-                  }}
-                >
+            <div className="booked-dates-box">
+              <div className="booked-dates-header">
+                <h4>Booked Dates</h4>
+                <button onClick={() => setShowBookedDates(false)} className="modal-close-btn">
                   ×
                 </button>
               </div>
               {bookedDates.length > 0 ? (
-                <ul style={{ 
-                  listStyle: 'none', 
-                  padding: 0,
-                  margin: 0 
-                }}>
+                <ul className="booked-dates-list">
                   {bookedDates.map((date, index) => (
-                    <li key={index} style={{
-                      padding: '5px',
-                      marginBottom: '5px',
-                      backgroundColor: '#fee2e2',
-                      borderRadius: '3px',
-                      color: '#dc2626'
-                    }}>
+                    <li key={index} className="booked-date-item">
                       {new Date(date).toLocaleDateString()}
                     </li>
                   ))}
                 </ul>
               ) : (
-                <p style={{ margin: 0, color: '#16a34a' }}>No dates are currently booked</p>
+                <p className="no-booked-text">No dates are currently booked</p>
               )}
             </div>
           )}
-          
-          {/* Buttons */}
-          <div style={{
-            display: 'flex',
-            gap: '15px',
-            marginTop: '10px'
-          }}>
-            <button 
-              style={{
-                padding: '12px 20px',
-                border: 'none',
-                borderRadius: '5px',
-                cursor: 'pointer',
-                fontWeight: 'bold',
-                width: '50%',
-                backgroundColor: '#f8f8f8',
-                color: '#333',
-                transition: 'all 0.3s ease'
-              }}
-              onMouseOver={(e) => e.target.style.backgroundColor = '#e8e8e8'}
-              onMouseOut={(e) => e.target.style.backgroundColor = '#f8f8f8'}
-            >
-              ❤️ Wishlist
-            </button>
-            
+
+          <div className="button-group">
             <button 
               onClick={handleBookNow}
-              style={{
-                padding: '12px 20px',
-                border: 'none',
-                borderRadius: '5px',
-                cursor: 'pointer',
-                fontWeight: 'bold',
-                width: '50%',
-                backgroundColor: '#ff5a5f',
-                color: 'white',
-                transition: 'all 0.3s ease'
-              }}
-              onMouseOver={(e) => e.target.style.backgroundColor = '#e04a50'}
-              onMouseOut={(e) => e.target.style.backgroundColor = '#ff5a5f'}
+              className="button button-book"
             >
               Book Now
             </button>
@@ -451,42 +323,11 @@ const VenueDetail = () => {
 
       {/* Modal for Event Details */}
       {showModal && (
-        <div style={{
-          position: 'fixed',
-          zIndex: 1000,
-          left: 0,
-          top: 0,
-          width: '100%',
-          height: '100%',
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center'
-        }}>
-          <div style={{
-            backgroundColor: 'white',
-            width: '90%',
-            maxWidth: '400px',
-            padding: '25px',
-            borderRadius: '8px',
-            boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)'
-          }}>
-            <h2 style={{
-              margin: '0 0 20px',
-              fontSize: '1.5rem',
-              textAlign: 'center',
-              color: '#333'
-            }}>Enter Event Details</h2>
-            
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2 className="modal-header">Enter Event Details</h2>
             <form>
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '5px',
-                fontSize: '0.9rem',
-                color: '#333',
-                marginBottom: '15px'
-              }}>
+              <div className="form-group">
                 <label>Event Name:</label>
                 <input
                   type="text"
@@ -495,23 +336,10 @@ const VenueDetail = () => {
                   onChange={handleInputChange}
                   required
                   placeholder="Enter event name"
-                  style={{
-                    padding: '10px',
-                    border: '1px solid #ccc',
-                    borderRadius: '4px',
-                    fontSize: '0.9rem'
-                  }}
+                  className="form-input"
                 />
               </div>
-              
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '5px',
-                fontSize: '0.9rem',
-                color: '#333',
-                marginBottom: '15px'
-              }}>
+              <div className="form-group">
                 <label>Event Date:</label>
                 <input
                   type="date"
@@ -520,23 +348,10 @@ const VenueDetail = () => {
                   onChange={handleInputChange}
                   min={new Date().toISOString().split('T')[0]}
                   required
-                  style={{
-                    padding: '10px',
-                    border: '1px solid #ccc',
-                    borderRadius: '4px',
-                    fontSize: '0.9rem'
-                  }}
+                  className="form-input"
                 />
               </div>
-              
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '5px',
-                fontSize: '0.9rem',
-                color: '#333',
-                marginBottom: '15px'
-              }}>
+              <div className="form-group">
                 <label>Event Time:</label>
                 <input
                   type="time"
@@ -544,96 +359,36 @@ const VenueDetail = () => {
                   value={eventDetails.eventTime}
                   onChange={handleInputChange}
                   required
-                  style={{
-                    padding: '10px',
-                    border: '1px solid #ccc',
-                    borderRadius: '4px',
-                    fontSize: '0.9rem'
-                  }}
+                  className="form-input"
                 />
               </div>
-              
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '5px',
-                fontSize: '0.9rem',
-                color: '#333',
-                marginBottom: '15px'
-              }}>
+              <div className="form-group">
                 <label>Special Instructions:</label>
                 <textarea
                   name="specialInstructions"
                   value={eventDetails.specialInstructions}
                   onChange={handleInputChange}
-                  style={{
-                    padding: '10px',
-                    border: '1px solid #ccc',
-                    borderRadius: '4px',
-                    fontSize: '0.9rem',
-                    resize: 'vertical',
-                    minHeight: '80px'
-                  }}
+                  className="form-textarea"
                 />
               </div>
-              
-              <div className="venue-location" style={{
-                marginBottom: '15px',
-                padding: '10px',
-                backgroundColor: '#f8f9fa',
-                borderRadius: '4px'
-              }}>
-                <label style={{
-                  display: 'block',
-                  marginBottom: '5px',
-                  fontWeight: 'bold',
-                  color: '#555'
-                }}>Venue Location:</label>
-                <p style={{margin: 0, color: '#666'}}>{venue.location}</p>
+              <div className="venue-location-box">
+                <label className="location-label">Venue Location:</label>
+                <p className="location-text">{venue.location}</p>
               </div>
-              
-              <div style={{
-                display: 'flex',
-                justifyContent: 'flex-end',
-                gap: '10px',
-                marginTop: '15px'
-              }}>
+              <div className="modal-buttons">
                 <button 
                   type="button" 
                   onClick={() => setShowModal(false)}
-                  style={{
-                    padding: '10px 16px',
-                    border: 'none',
-                    borderRadius: '4px',
-                    fontSize: '0.9rem',
-                    cursor: 'pointer',
-                    backgroundColor: '#dc3545',
-                    color: 'white',
-                    transition: 'background-color 0.3s'
-                  }}
-                  onMouseOver={(e) => e.target.style.backgroundColor = '#c82333'}
-                  onMouseOut={(e) => e.target.style.backgroundColor = '#dc3545'}
+                  className="button modal-btn-cancel"
                 >
                   Cancel
                 </button>
-                
                 <button 
                   type="button" 
                   onClick={handleSubmit}
-                  style={{
-                    padding: '10px 16px',
-                    border: 'none',
-                    borderRadius: '4px',
-                    fontSize: '0.9rem',
-                    cursor: 'pointer',
-                    backgroundColor: '#28a745',
-                    color: 'white',
-                    transition: 'background-color 0.3s'
-                  }}
-                  onMouseOver={(e) => e.target.style.backgroundColor = '#218838'}
-                  onMouseOut={(e) => e.target.style.backgroundColor = '#28a745'}
+                  className="button modal-btn-submit"
                 >
-                  Submit
+                  {isSubmitting ? 'Confirming Booking' : 'Confirm Booking'}
                 </button>
               </div>
             </form>

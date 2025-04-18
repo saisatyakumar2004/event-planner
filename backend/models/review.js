@@ -6,8 +6,8 @@ const reviewSchema = new mongoose.Schema({
   userId: { type: String, required: true },
   userName: { type: String, required: true },
   rating: { type: Number, required: true, min: 1, max: 5 },
-  comment: { type: String, required: true },
-  date: { type: Date, default: Date.now }
+  comment: { type: String, required: true }, // Ensure comment is required
+  date: { type: Date, required: true } // Ensure date is required
 });
 
 const Review = mongoose.model('Review', reviewSchema);

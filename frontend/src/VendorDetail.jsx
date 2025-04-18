@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import "./VendorDetail.css"; // import new CSS
 
 const VendorDetail = () => {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ const VendorDetail = () => {
     comment: ''
   });
   const [eventDetails, setEventDetails] = useState({
-    eventName: '', // Add event name field
+    eventName: '',
     eventDate: '',
     eventTime: '',
     eventLocation: '',
@@ -26,6 +27,7 @@ const VendorDetail = () => {
   const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
   const [bookedDates, setBookedDates] = useState([]);
   const [showBookedDates, setShowBookedDates] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validateDateTime = (date, time) => {
     const now = new Date();
@@ -56,7 +58,7 @@ const VendorDetail = () => {
       return data.isAvailable;
     } catch (error) {
       console.error('Error checking availability:', error);
-      return true; // Default to true to avoid blocking date selection on error
+      return true;
     }
   };
 
@@ -107,7 +109,6 @@ const VendorDetail = () => {
           vendorData = data.GroomWearData || [];
         }
 
-        // Find the vendor by comparing product_id strings
         const foundVendor = vendorData.find(v => String(v.product_id) === String(id));
         
         if (!foundVendor) {
@@ -115,7 +116,6 @@ const VendorDetail = () => {
         }
         setVendor(foundVendor);
 
-        // Only fetch reviews if we found the vendor
         if (foundVendor) {
           const reviewsResponse = await fetch(`http://localhost:5000/api/reviews/${id}`);
           if (reviewsResponse.ok) {
@@ -178,10 +178,8 @@ const VendorDetail = () => {
     }
   
     try {
-      // 1. Verify the order exists and belongs to the user
       const orderResponse = await fetch(`http://localhost:5000/api/orders/${reviewInput.orderId}`);
       
-      // First check response status
       if (!orderResponse.ok) {
         const errorData = await orderResponse.json().catch(() => ({}));
         throw new Error(errorData.message || 'Order not found or invalid order ID');
@@ -189,19 +187,16 @@ const VendorDetail = () => {
   
       const orderData = await orderResponse.json();
       
-      // Verify order ownership
       if (orderData.customer_email !== user.email) {
         alert('This order does not belong to you');
         return;
       }
   
-      // Verify product match
       if (orderData.item_name !== vendor.title) {
         alert('This order is not for this product');
         return;
       }
   
-      // 2. Check for existing review
       const checkReviewResponse = await fetch(
         `http://localhost:5000/api/reviews/check?productId=${id}&orderId=${reviewInput.orderId}`
       );
@@ -218,7 +213,6 @@ const VendorDetail = () => {
         return;
       }
   
-      // 3. Submit the review
       const reviewResponse = await fetch('http://localhost:5000/api/reviews/add', {
         method: 'POST',
         headers: {
@@ -240,7 +234,6 @@ const VendorDetail = () => {
         throw new Error(errorData.message || 'Failed to submit review');
       }
   
-      // Success case
       const newReview = {
         userName: user.name,
         rating: reviewInput.rating,
@@ -265,7 +258,6 @@ const VendorDetail = () => {
         product: vendor?.title
       });
       
-      // User-friendly error messages
       let displayMessage = error.message;
       
       if (error.message.includes('Failed to fetch')) {
@@ -318,7 +310,7 @@ const VendorDetail = () => {
     const order_id = `order-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
     const orderData = {
-      order_id, // Include order_id
+      order_id,
       customer_email: user.email,
       vendor_email: vendor.vendor_email || 'vendor@example.com',
       item_name: vendor.title,
@@ -333,6 +325,7 @@ const VendorDetail = () => {
     };
 
     try {
+      setIsSubmitting(true);
       const response = await fetch('http://localhost:5000/api/orders/addOrder', {
         method: 'POST',
         headers: {
@@ -362,723 +355,139 @@ const VendorDetail = () => {
     } catch (error) {
       console.error('Error creating order:', error);
       alert(error.message || 'Error creating order. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   if (loading) {
-    return (
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh'
-      }}>
-        <h2 style={{ color: '#333' }}>Loading...</h2>
-      </div>
-    );
+    return <div className="vendor-loading"><h2>Loading...</h2></div>;
   }
-
   if (error) {
-    return (
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh'
-      }}>
-        <h2 style={{ color: '#dc3545' }}>{error}</h2>
-      </div>
-    );
+    return <div className="vendor-error"><h2>{error}</h2></div>;
   }
-
   if (!vendor) {
-    return (
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh'
-      }}>
-        <h2 style={{ color: '#333' }}>Vendor not found</h2>
-      </div>
-    );
+    return <div className="vendor-notfound"><h2>Vendor not found</h2></div>;
   }
 
   return (
-    <div style={{
-      maxWidth: '1200px',
-      margin: '0 auto',
-      padding: '20px',
-      fontFamily: 'Arial, sans-serif'
-    }}>
-      {/* Main Content */}
-      <div style={{
-        display: 'flex',
-        flexDirection: window.innerWidth <= 768 ? 'column' : 'row',
-        gap: '30px',
-        marginTop: '20px'
-      }}>
-        {/* Image Section */}
-        <div style={{
-          flex: 1,
-          borderRadius: '8px',
-          overflow: 'hidden',
-          boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
-        }}>
-          <img 
-            src={vendor.image_url} 
-            alt={vendor.title}
-            style={{
-              width: '100%',
-              height: 'auto',
-              display: 'block'
-            }}
-          />
+    <div className="vendor-detail-container">
+      <div className="vendor-detail-main">
+        <div className="vendor-image-section">
+          <img src={vendor.image_url} alt={vendor.title} className="vendor-image" />
         </div>
-
-        {/* Details Section */}
-        <div style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '20px'
-        }}>
-          <div style={{
-            backgroundColor: '#fff',
-            borderRadius: '8px',
-            padding: '25px',
-            boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
-          }}>
-            <h1 style={{
-              margin: 0,
-              fontSize: '28px',
-              color: '#333',
-              marginBottom: '10px'
-            }}>{vendor.title}</h1>
-            
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '5px',
-              marginBottom: '15px'
-            }}>
-              <span style={{
-                color: '#ffc107',
-                fontWeight: 'bold'
-              }}>{vendor.ratings} ⭐</span>
-              <span style={{ color: '#666' }}>{vendor.location}</span>
-            </div>
-
-            <div style={{
-              backgroundColor: '#f8f9fa',
-              padding: '15px',
-              borderRadius: '8px',
-              margin: '15px 0'
-            }}>
-              <h3 style={{
-                margin: '0 0 10px 0',
-                color: '#333',
-                fontSize: '18px'
-              }}>Pricing Information</h3>
-              <p style={{
-                margin: '5px 0',
-                fontSize: '16px'
-              }}>
-                <strong>Price:</strong> {vendor.price ? `INR ${vendor.price}` : 'Price not available'}
-              </p>
-              <p style={{
-                color: '#ff5a5f',
-                fontWeight: 'bold',
-                margin: '5px 0 0 0'
-              }}>Special deal available!</p>
-            </div>
-
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '15px',
-              marginTop: '20px'
-            }}>
-              <button 
-                onClick={fetchBookedDates}
-                disabled={isCheckingAvailability}
-                style={{
-                  width: '100%',
-                  padding: '12px',
-                  marginTop: '10px',
-                  backgroundColor: '#007bff',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '5px',
-                  cursor: isCheckingAvailability ? 'wait' : 'pointer',
-                  opacity: isCheckingAvailability ? 0.7 : 1
-                }}
-              >
-                {isCheckingAvailability ? 'Checking...' : 'Check Availability'}
-              </button>
-
-              {showBookedDates && (
-                <div style={{
-                  marginTop: '15px',
-                  padding: '15px',
-                  backgroundColor: '#f8f9fa',
-                  borderRadius: '5px',
-                  border: '1px solid #dee2e6'
-                }}>
-                  <div style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '10px'
-                  }}>
-                    <h4 style={{ margin: 0 }}>Booked Dates</h4>
-                    <button 
-                      onClick={() => setShowBookedDates(false)}
-                      style={{
-                        border: 'none',
-                        background: 'none',
-                        fontSize: '20px',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      ×
-                    </button>
-                  </div>
-                  {bookedDates.length > 0 ? (
-                    <ul style={{ 
-                      listStyle: 'none', 
-                      padding: 0,
-                      margin: 0 
-                    }}>
-                      {bookedDates.map((date, index) => (
-                        <li key={index} style={{
-                          padding: '5px',
-                          marginBottom: '5px',
-                          backgroundColor: '#fee2e2',
-                          borderRadius: '3px',
-                          color: '#dc2626'
-                        }}>
-                          {new Date(date).toLocaleDateString()}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p style={{ margin: 0, color: '#16a34a' }}>No dates are currently booked</p>
-                  )}
-                </div>
-              )}
-
-              <button 
-                style={{
-                  flex: 1,
-                  padding: '12px',
-                  border: 'none',
-                  borderRadius: '6px',
-                  backgroundColor: '#f8f9fa',
-                  color: '#333',
-                  fontWeight: 'bold',
-                  cursor: 'pointer',
-                  transition: 'background-color 0.3s',
-                }}
-                onMouseOver={e => e.target.style.backgroundColor = '#e9ecef'}
-                onMouseOut={e => e.target.style.backgroundColor = '#f8f9fa'}
-              >
-                ❤️ Wishlist
-              </button>
-              
-              <button 
-                onClick={handleBookNow}
-                style={{
-                  flex: 1,
-                  padding: '12px',
-                  border: 'none',
-                  borderRadius: '6px',
-                  backgroundColor: '#ff5a5f',
-                  color: 'white',
-                  fontWeight: 'bold',
-                  cursor: 'pointer',
-                  transition: 'background-color 0.3s',
-                }}
-                onMouseOver={e => e.target.style.backgroundColor = '#e04a50'}
-                onMouseOut={e => e.target.style.backgroundColor = '#ff5a5f'}
-              >
-                Book Now
-              </button>
-            </div>
+        <div className="vendor-details-card">
+          <h1 className="vendor-title">{vendor.title}</h1>
+          <div className="vendor-info">
+            <span className="vendor-rating">{vendor.ratings} ⭐</span>
+            <span className="vendor-location">{vendor.location}</span>
           </div>
-
-          {/* Additional Vendor Details */}
-          <div style={{
-            backgroundColor: '#fff',
-            borderRadius: '8px',
-            padding: '25px',
-            boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
-          }}>
-            <h3 style={{
-              margin: '0 0 15px 0',
-              color: '#333',
-              fontSize: '20px'
-            }}>About This Vendor</h3>
-            <p style={{
-              margin: 0,
-              color: '#555',
-              lineHeight: '1.6'
-            }}>
-              {vendor.description || 'No additional information available.'}
+          <div className="price-info-card">
+            <h3>Pricing Information</h3>
+            <p className="vendor-price">
+              {vendor.price ? `INR ${vendor.price}` : 'Price not available'}
             </p>
+            <p className="special-deal-text">Special deal available!</p>
           </div>
-
-          {/* Reviews Section */}
-          <div style={{
-            backgroundColor: '#fff',
-            borderRadius: '8px',
-            padding: '25px',
-            boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
-          }}>
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: '20px'
-            }}>
-              <h3 style={{
-                margin: 0,
-                color: '#333',
-                fontSize: '20px'
-              }}>Customer Reviews</h3>
-              {user && (
-                <button 
-                  onClick={() => setShowReviewModal(true)}
-                  style={{
-                    padding: '8px 16px',
-                    border: 'none',
-                    borderRadius: '4px',
-                    backgroundColor: '#007bff',
-                    color: 'white',
-                    fontWeight: 'bold',
-                    cursor: 'pointer',
-                    transition: 'background-color 0.3s',
-                  }}
-                  onMouseOver={e => e.target.style.backgroundColor = '#0056b3'}
-                  onMouseOut={e => e.target.style.backgroundColor = '#007bff'}
-                >
-                  Write a Review
-                </button>
+          <div className="button-group">
+            <button onClick={fetchBookedDates} disabled={isCheckingAvailability} className="check-availability-button">
+              {isCheckingAvailability ? 'Checking...' : 'Check Availability'}
+            </button>
+            <button onClick={handleBookNow} className="book-now-button">
+              Book Now
+            </button>
+          </div>
+          {showBookedDates && (
+            <div className="booked-dates-modal">
+              <div className="modal-header">
+                <h4>Booked Dates</h4>
+                <button onClick={() => setShowBookedDates(false)} className="modal-close-btn">×</button>
+              </div>
+              {bookedDates.length > 0 ? (
+                <ul className="booked-dates-list">
+                  {bookedDates.map((date, index) => (
+                    <li key={index} className="booked-date-item">
+                      {new Date(date).toLocaleDateString()}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="no-booked-text">No dates are currently booked</p>
               )}
             </div>
-
-            {reviews.length === 0 ? (
-              <p style={{ color: '#666', textAlign: 'center' }}>No reviews yet. Be the first to review!</p>
-            ) : (
-              <div style={{
-                maxHeight: '400px',
-                overflowY: 'auto',
-                paddingRight: '10px'
-              }}>
-                {reviews.map((review, index) => (
-                  <div key={index} style={{
-                    borderBottom: '1px solid #eee',
-                    padding: '15px 0',
-                    ':last-child': {
-                      borderBottom: 'none'
-                    }
-                  }}>
-                    <div style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      marginBottom: '10px'
-                    }}>
-                      <div style={{
-                        width: '40px',
-                        height: '40px',
-                        borderRadius: '50%',
-                        backgroundColor: '#f0f0f0',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginRight: '10px',
-                        fontWeight: 'bold',
-                        color: '#333'
-                      }}>
-                        {review.userName ? review.userName.charAt(0).toUpperCase() : 'U'}
-                      </div>
-                      <div>
-                        <p style={{
-                          margin: 0,
-                          fontWeight: 'bold',
-                          color: '#333'
-                        }}>{review.userName || 'Anonymous'}</p>
-                        <div style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          marginTop: '2px'
-                        }}>
-                          <span style={{
-                            color: '#ffc107',
-                            marginRight: '5px'
-                          }}>
-                            {'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}
-                          </span>
-                          <span style={{
-                            color: '#999',
-                            fontSize: '12px'
-                          }}>
-                            {new Date(review.date).toLocaleDateString()}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <p style={{
-                      margin: 0,
-                      color: '#555',
-                      lineHeight: '1.5'
-                    }}>{review.comment}</p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          )}
         </div>
       </div>
-
-      {/* Booking Modal */}
+      
       {showModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 1000
-        }}>
-          <div style={{
-            backgroundColor: 'white',
-            borderRadius: '8px',
-            width: '90%',
-            maxWidth: '500px',
-            padding: '25px',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
-          }}>
-            <h2 style={{
-              margin: '0 0 20px 0',
-              color: '#333',
-              textAlign: 'center'
-            }}>Event Details</h2>
-            
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2 className="modal-title">Event Details</h2>
             <form>
-              <div style={{ marginBottom: '15px' }}>
-                <label style={{
-                  display: 'block',
-                  marginBottom: '5px',
-                  fontWeight: 'bold',
-                  color: '#555'
-                }}>Event Name</label>
-                <input
-                  type="text"
-                  name="eventName"
-                  value={eventDetails.eventName}
-                  onChange={handleInputChange}
-                  required
-                  placeholder="Enter event name"
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    border: '1px solid #ddd',
-                    borderRadius: '4px',
-                    fontSize: '16px'
-                  }}
-                />
+              <div className="form-group">
+                <label>Event Name</label>
+                <input type="text" name="eventName" value={eventDetails.eventName} onChange={handleInputChange}
+                  placeholder="Enter event name" required className="form-input" />
               </div>
-
-              <div style={{ marginBottom: '15px' }}>
-                <label style={{
-                  display: 'block',
-                  marginBottom: '5px',
-                  fontWeight: 'bold',
-                  color: '#555'
-                }}>Event Date</label>
-                <input
-                  type="date"
-                  name="eventDate"
-                  value={eventDetails.eventDate}
-                  onChange={handleInputChange}
-                  required
-                  min={new Date().toISOString().split('T')[0]}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    border: '1px solid #ddd',
-                    borderRadius: '4px',
-                    fontSize: '16px'
-                  }}
-                />
+              <div className="form-group">
+                <label>Event Date</label>
+                <input type="date" name="eventDate" value={eventDetails.eventDate} 
+                  onChange={handleInputChange} min={new Date().toISOString().split('T')[0]} required className="form-input" />
               </div>
-
-              <div style={{ marginBottom: '15px' }}>
-                <label style={{
-                  display: 'block',
-                  marginBottom: '5px',
-                  fontWeight: 'bold',
-                  color: '#555'
-                }}>Event Time</label>
-                <input
-                  type="time"
-                  name="eventTime"
-                  value={eventDetails.eventTime}
-                  onChange={handleInputChange}
-                  required
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    border: '1px solid #ddd',
-                    borderRadius: '4px',
-                    fontSize: '16px'
-                  }}
-                />
+              <div className="form-group">
+                <label>Event Time</label>
+                <input type="time" name="eventTime" value={eventDetails.eventTime} onChange={handleInputChange} required className="form-input" />
               </div>
-
-              <div style={{ marginBottom: '15px' }}>
-                <label style={{
-                  display: 'block',
-                  marginBottom: '5px',
-                  fontWeight: 'bold',
-                  color: '#555'
-                }}>Event Location</label>
-                <input
-                  type="text"
-                  name="eventLocation"
-                  value={eventDetails.eventLocation}
-                  onChange={handleInputChange}
-                  required
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    border: '1px solid #ddd',
-                    borderRadius: '4px',
-                    fontSize: '16px'
-                  }}
-                />
+              <div className="form-group">
+                <label>Event Location</label>
+                <input type="text" name="eventLocation" value={eventDetails.eventLocation} onChange={handleInputChange} 
+                  required className="form-input" />
               </div>
-
-              <div style={{ marginBottom: '20px' }}>
-                <label style={{
-                  display: 'block',
-                  marginBottom: '5px',
-                  fontWeight: 'bold',
-                  color: '#555'
-                }}>Special Instructions</label>
-                <textarea
-                  name="specialInstructions"
-                  value={eventDetails.specialInstructions}
-                  onChange={handleInputChange}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    border: '1px solid #ddd',
-                    borderRadius: '4px',
-                    fontSize: '16px',
-                    minHeight: '100px',
-                    resize: 'vertical'
-                  }}
-                />
+              <div className="form-group">
+                <label>Special Instructions</label>
+                <textarea name="specialInstructions" value={eventDetails.specialInstructions} onChange={handleInputChange} className="form-textarea" />
               </div>
-
-              <div style={{
-                display: 'flex',
-                justifyContent: 'flex-end',
-                gap: '10px'
-              }}>
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  style={{
-                    padding: '10px 20px',
-                    border: 'none',
-                    borderRadius: '4px',
-                    backgroundColor: '#6c757d',
-                    color: 'white',
-                    fontWeight: 'bold',
-                    cursor: 'pointer',
-                    transition: 'background-color 0.3s'
-                  }}
-                  onMouseOver={e => e.target.style.backgroundColor = '#5a6268'}
-                  onMouseOut={e => e.target.style.backgroundColor = '#6c757d'}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={handleSubmit}
-                  style={{
-                    padding: '10px 20px',
-                    border: 'none',
-                    borderRadius: '4px',
-                    backgroundColor: '#28a745',
-                    color: 'white',
-                    fontWeight: 'bold',
-                    cursor: 'pointer',
-                    transition: 'background-color 0.3s'
-                  }}
-                  onMouseOver={e => e.target.style.backgroundColor = '#218838'}
-                  onMouseOut={e => e.target.style.backgroundColor = '#28a745'}
-                >
-                  Confirm Booking
+              <div className="modal-buttons">
+                <button type="button" onClick={() => setShowModal(false)} className="modal-cancel-btn">Cancel</button>
+                <button type="button" onClick={handleSubmit} className="modal-submit-btn">
+                  {isSubmitting ? 'Confirming Booking' : 'Confirm Booking'}
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
-
-      {/* Review Modal */}
+      
       {showReviewModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 1000
-        }}>
-          <div style={{
-            backgroundColor: 'white',
-            borderRadius: '8px',
-            width: '90%',
-            maxWidth: '500px',
-            padding: '25px',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
-          }}>
-            <h2 style={{
-              margin: '0 0 20px 0',
-              color: '#333',
-              textAlign: 'center'
-            }}>Write a Review</h2>
-            
+        <div className="modal-overlay review-modal">
+          <div className="modal-content">
+            <h2 className="modal-title">Write a Review</h2>
             <form>
-              <div style={{ marginBottom: '15px' }}>
-                <label style={{
-                  display: 'block',
-                  marginBottom: '5px',
-                  fontWeight: 'bold',
-                  color: '#555'
-                }}>Order ID</label>
-                <input
-                  type="text"
-                  name="orderId"
-                  value={reviewInput.orderId}
-                  onChange={handleReviewInputChange}
-                  required
-                  placeholder="Enter your order ID"
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    border: '1px solid #ddd',
-                    borderRadius: '4px',
-                    fontSize: '16px'
-                  }}
-                />
+              <div className="form-group">
+                <label>Order ID</label>
+                <input type="text" name="orderId" value={reviewInput.orderId} onChange={handleReviewInputChange}
+                  placeholder="Enter your order ID" required className="form-input" />
               </div>
-
-              <div style={{ marginBottom: '15px' }}>
-                <label style={{
-                  display: 'block',
-                  marginBottom: '5px',
-                  fontWeight: 'bold',
-                  color: '#555'
-                }}>Rating</label>
-                <div style={{ display: 'flex', gap: '10px' }}>
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                      key={star}
-                      type="button"
-                      onClick={() => setReviewInput({...reviewInput, rating: star})}
-                      style={{
-                        backgroundColor: 'transparent',
-                        border: 'none',
-                        fontSize: '24px',
-                        cursor: 'pointer',
-                        color: star <= reviewInput.rating ? '#ffc107' : '#ddd',
-                        padding: 0
-                      }}
-                    >
+              <div className="form-group rating-group">
+                <label>Rating</label>
+                <div className="star-rating">
+                  {[1, 2, 3, 4, 5].map(star => (
+                    <button key={star} type="button"
+                      onClick={() => setReviewInput({ ...reviewInput, rating: star })}
+                      className={`star-button ${star <= reviewInput.rating ? 'star-filled' : ''}`}>
                       ★
                     </button>
                   ))}
                 </div>
               </div>
-
-              <div style={{ marginBottom: '20px' }}>
-                <label style={{
-                  display: 'block',
-                  marginBottom: '5px',
-                  fontWeight: 'bold',
-                  color: '#555'
-                }}>Your Review</label>
-                <textarea
-                  name="comment"
-                  value={reviewInput.comment}
-                  onChange={handleReviewInputChange}
-                  required
-                  placeholder="Share your experience with this vendor..."
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    border: '1px solid #ddd',
-                    borderRadius: '4px',
-                    fontSize: '16px',
-                    minHeight: '100px',
-                    resize: 'vertical'
-                  }}
-                />
+              <div className="form-group">
+                <label>Your Review</label>
+                <textarea name="comment" value={reviewInput.comment} onChange={handleReviewInputChange}
+                  placeholder="Share your experience..." required className="form-textarea" />
               </div>
-
-              <div style={{
-                display: 'flex',
-                justifyContent: 'flex-end',
-                gap: '10px'
-              }}>
-                <button
-                  type="button"
-                  onClick={() => setShowReviewModal(false)}
-                  style={{
-                    padding: '10px 20px',
-                    border: 'none',
-                    borderRadius: '4px',
-                    backgroundColor: '#6c757d',
-                    color: 'white',
-                    fontWeight: 'bold',
-                    cursor: 'pointer',
-                    transition: 'background-color 0.3s'
-                  }}
-                  onMouseOver={e => e.target.style.backgroundColor = '#5a6268'}
-                  onMouseOut={e => e.target.style.backgroundColor = '#6c757d'}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={handleSubmitReview}
-                  style={{
-                    padding: '10px 20px',
-                    border: 'none',
-                    borderRadius: '4px',
-                    backgroundColor: '#007bff',
-                    color: 'white',
-                    fontWeight: 'bold',
-                    cursor: 'pointer',
-                    transition: 'background-color 0.3s'
-                  }}
-                  onMouseOver={e => e.target.style.backgroundColor = '#0056b3'}
-                  onMouseOut={e => e.target.style.backgroundColor = '#007bff'}
-                >
+              <div className="modal-buttons">
+                <button type="button" onClick={() => setShowReviewModal(false)} className="modal-cancel-btn">Cancel</button>
+                <button type="button" onClick={handleSubmitReview} className="modal-submit-btn">
                   Submit Review
                 </button>
               </div>
