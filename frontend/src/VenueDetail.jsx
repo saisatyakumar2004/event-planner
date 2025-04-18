@@ -194,6 +194,9 @@ const VenueDetail = () => {
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
+      // Get current user data with phone number
+      const currentUser = JSON.parse(localStorage.getItem('user'));
+      
       // Validate date and time
       if (!validateDateTime(eventDetails.eventDate, eventDetails.eventTime)) {
         alert('Please select a future date and time');
@@ -212,7 +215,8 @@ const VenueDetail = () => {
       // Prepare order data with all required fields
       const orderData = {
         order_id,
-        customer_email: user.email,
+        customer_email: currentUser.email,
+        customer_phone: currentUser.phoneNumber, // Explicitly use phoneNumber from user data
         vendor_email: venue.vendor_email || 'vendor@example.com',
         item_name: venue.title || 'Venue Booking',
         item_price: venue.price || 0,

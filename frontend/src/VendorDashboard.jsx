@@ -101,15 +101,18 @@ const VendorDashboard = () => {
 
         const userData = JSON.parse(loggedInUser);
         setUser(userData);
+        setEmail(userData.vendor_email); // Add this line to ensure email is set
 
         const fetchUserData = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/api/vendor?vendor_email=${userData.vendor_email}`);
-                const { name, vendor_email, phone, isVerified } = response.data;
-                setName(name);
-                setEmail(vendor_email);
-                setPhoneNumber(phone);
-                setVerified(isVerified);
+                // Ensure vendor_email is available before making the request
+                if (userData.vendor_email) {
+                    const response = await axios.get(`http://localhost:5000/api/vendor?vendor_email=${userData.vendor_email}`);
+                    const { name, vendor_email, phone, isVerified } = response.data;
+                    setName(name);
+                    setPhoneNumber(phone);
+                    setVerified(isVerified);
+                }
             } catch (error) {
                 console.error('Error fetching vendor data:', error);
             }

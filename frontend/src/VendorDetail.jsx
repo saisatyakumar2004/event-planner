@@ -282,6 +282,7 @@ const VendorDetail = () => {
     const orderData = {
       order_id,
       customer_email: user.email,
+      customer_phone: user.phoneNumber || '', // Make sure phone number is included
       vendor_email: vendor.vendor_email || 'vendor@example.com',
       item_name: vendor.title,
       item_price: vendor.price,
@@ -289,8 +290,8 @@ const VendorDetail = () => {
       venue_id: vendor.product_id || 'default-venue',
       eventDetails: {
         ...eventDetails,
-        eventLocation: eventDetails.eventLocation || vendor.location,
-        eventName: eventDetails.eventName || vendor.title
+        eventLocation: eventDetails.eventLocation || vendor.location || '',
+        eventName: eventDetails.eventName || vendor.title || 'Event'
       }
     };
 

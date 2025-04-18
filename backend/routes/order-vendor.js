@@ -9,7 +9,7 @@ const orderVendorRoutes = (app) => {
     const { orderId } = req.params;
 
     try {
-      // Find the order by ID
+      // Find the order by IDs
       const order = await Order.findOne({ order_id: orderId });
 
       // Check if the order exists
@@ -29,7 +29,7 @@ const orderVendorRoutes = (app) => {
       );
 
       // Send email to customer using the /send-order-status route in otp.js
-      await axios.post('https://event-planner-y4fw.onrender.com/api/otp/send-order-status', {
+      await axios.post('http://localhost:5000/api/otp/send-order-status', {
         email: order.customer_email,
         orderId: order.order_id,
         status: 'accepted',
@@ -67,7 +67,7 @@ const orderVendorRoutes = (app) => {
       );
 
       // Send email to customer using the /send-order-status route in otp.js
-      await axios.post('https://event-planner-y4fw.onrender.com/api/otp/send-order-status', {
+      await axios.post('http://localhost:5000/api/otp/send-order-status', {
         email: order.customer_email,
         orderId: order.order_id,
         status: 'rejected',

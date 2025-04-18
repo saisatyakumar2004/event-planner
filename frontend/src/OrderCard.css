@@ -125,3 +125,14 @@
 .closeButton:hover {
     opacity: 0.8;
 }
+
+.customerInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.customerInfo div {
+    display: flex;
+    flex-direction: column;
+}
