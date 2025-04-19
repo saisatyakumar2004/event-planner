@@ -67,13 +67,15 @@ router.post('/verify', (req, res) => {
 
     const storedOtpData = otpStorage.get(email);
 
+    // Updated error message when no OTP is found
     if (!storedOtpData) {
-        return res.status(400).json({ success: false, msg: 'OTP expired or not requested' });
+        return res.status(400).json({ success: false, msg: 'OTP has expired. Please request a new OTP.' });
     }
 
+    // Updated check for expiry with clearer message
     if (Date.now() > storedOtpData.expiresAt) {
         otpStorage.delete(email);
-        return res.status(400).json({ success: false, msg: 'OTP expired' });
+        return res.status(400).json({ success: false, msg: 'OTP has expired. Please request a new OTP.' });
     }
 
     if (storedOtpData.otp === otp) {
@@ -83,10 +85,6 @@ router.post('/verify', (req, res) => {
         return res.status(400).json({ success: false, msg: 'Invalid OTP' });
     }
 });
-
-
-
-
 
 // Route to send booking confirmation email to vendor with client details
 router.post('/send-booking-confirmation', async (req, res) => {
@@ -113,16 +111,7 @@ router.post('/send-booking-confirmation', async (req, res) => {
     });
   });
 
-
-
-
-
-
-
-
-
-
-  // New route to send order status email
+// New route to send order status email
 router.post('/send-order-status', async (req, res) => {
     const { email, orderId, status } = req.body;
 
@@ -147,6 +136,4 @@ router.post('/send-order-status', async (req, res) => {
     });
 });
 
-
-  
 module.exports = router;

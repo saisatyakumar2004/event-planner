@@ -105,7 +105,7 @@ router.post('/forgot-passwordvendor', async (req, res) => {
         if (!vendor) return res.status(400).json({ msg: 'Vendor not found' });
 
         // Generate and send OTP
-        const otpResponse = await axios.post('https://event-planner-y4fw.onrender.com/api/otp/generate', { email: vendor_email });
+        const otpResponse = await axios.post('http://localhost:5000/api/otp/generate', { email: vendor_email });
         if (otpResponse.data.success) {
             res.status(200).json({ msg: 'OTP sent successfully' });
         } else {
@@ -121,8 +121,8 @@ router.post('/forgot-passwordvendor', async (req, res) => {
 router.post('/reset-password', async (req, res) => {
     const { vendor_email, otp, newPassword } = req.body;
     try {
-        // Verify OTP
-        const otpResponse = await axios.post('https://event-planner-y4fw.onrender.com/api/otp/verify', { email: vendor_email, otp });
+        // Verify OTP (updated URL without extra slash)
+        const otpResponse = await axios.post('http://localhost:5000/api/otp/verify', { email: vendor_email, otp });
         if (!otpResponse.data.success) return res.status(400).json({ msg: 'Invalid or expired OTP' });
 
         // Update password

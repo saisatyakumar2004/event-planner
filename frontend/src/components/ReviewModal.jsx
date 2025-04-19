@@ -7,10 +7,16 @@ const ReviewModal = ({ isOpen, onClose, onSubmit }) => {
     rating: 5,
     comment: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit(reviewData);
+    setIsSubmitting(true);
+    try {
+      await onSubmit(reviewData);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -54,7 +60,9 @@ const ReviewModal = ({ isOpen, onClose, onSubmit }) => {
           </div>
           <div className="modal-buttons">
             <button type="button" onClick={onClose} className="cancel-btn">Cancel</button>
-            <button type="submit" className="submit-btn">Submit Review</button>
+            <button type="submit" className="submit-btn">
+              {isSubmitting ? 'submitting review' : 'Submit Review'}
+            </button>
           </div>
         </form>
       </div>

@@ -9,11 +9,13 @@ const ForgotPassword = () => {
     const [newPassword, setNewPassword] = useState('');
     const [message, setMessage] = useState('');
     const [step, setStep] = useState(1); // 1: Enter email, 2: Enter OTP, 3: Enter new password
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
     // Step 1: Check if user exists and send OTP
     const handleEmailSubmit = async (e) => {
         e.preventDefault();
+        setIsLoading(true);
         try {
             // Check if the user exists
             const userCheckResponse = await axios.post('http://localhost:5000/api/auth/check-user', { email });
@@ -27,30 +29,38 @@ const ForgotPassword = () => {
             }
         } catch (error) {
             setMessage(error.response?.data?.msg || 'An error occurred');
+        } finally {
+            setIsLoading(false);
         }
     };
 
     // Step 2: Verify OTP
     const handleOtpSubmit = async (e) => {
         e.preventDefault();
+        setIsLoading(true);
         try {
             const response = await axios.post('http://localhost:5000/api/otp/verify', { email, otp });
             setMessage(response.data.msg);
             setStep(3); // Move to new password step
         } catch (error) {
             setMessage(error.response?.data?.msg || 'An error occurred');
+        } finally {
+            setIsLoading(false);
         }
     };
 
     // Step 3: Update password
     const handleNewPasswordSubmit = async (e) => {
         e.preventDefault();
+        setIsLoading(true);
         try {
             const response = await axios.post('http://localhost:5000/api/auth/reset-passworduser', { email, newPassword });
             setMessage(response.data.msg);
             navigate('/login'); // Redirect to login page after successful password reset
         } catch (error) {
             setMessage(error.response?.data?.msg || 'An error occurred');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -70,7 +80,9 @@ const ForgotPassword = () => {
                                 className="input-field"
                             />
                         </div>
-                        <button type="submit" className="submit-button">Send OTP</button>
+                        <button type="submit" className="submit-button">
+                            {isLoading ? "Sending OTP..." : "Send OTP"}
+                        </button>
                     </form>
                 )}
                 {step === 2 && (
@@ -85,7 +97,9 @@ const ForgotPassword = () => {
                                 className="input-field"
                             />
                         </div>
-                        <button type="submit" className="submit-button">Verify OTP</button>
+                        <button type="submit" className="submit-button">
+                            {isLoading ? "Verifying OTP" : "Verify OTP"}
+                        </button>
                     </form>
                 )}
                 {step === 3 && (
@@ -100,7 +114,9 @@ const ForgotPassword = () => {
                                 className="input-field"
                             />
                         </div>
-                        <button type="submit" className="submit-button">Reset Password</button>
+                        <button type="submit" className="submit-button">
+                            {isLoading ? "Reseting" : "Reset Password"}
+                        </button>
                     </form>
                 )}
                 {message && <p className="message">{message}</p>}

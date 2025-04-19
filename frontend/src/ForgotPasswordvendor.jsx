@@ -9,21 +9,27 @@ const ForgotPasswordvendor = () => {
     const [newPassword, setNewPassword] = useState('');
     const [message, setMessage] = useState('');
     const [step, setStep] = useState(1); // 1: Request OTP, 2: Verify OTP and reset password
+    const [loadingRequestOTP, setLoadingRequestOTP] = useState(false);
+    const [loadingResetPassword, setLoadingResetPassword] = useState(false);
     const navigate = useNavigate();
 
     const handleRequestOTP = async (e) => {
         e.preventDefault();
+        setLoadingRequestOTP(true);
         try {
             const { data } = await axios.post('http://localhost:5000/api/vendorauth/forgot-passwordvendor', { vendor_email });
             setMessage(data.msg);
             setStep(2);
         } catch (error) {
             setMessage(error.response?.data?.msg || 'Error requesting OTP');
+        } finally {
+            setLoadingRequestOTP(false);
         }
     };
 
     const handleResetPassword = async (e) => {
         e.preventDefault();
+        setLoadingResetPassword(true);
         try {
             const { data } = await axios.post('http://localhost:5000/api/vendorauth/reset-password', { vendor_email, otp, newPassword });
             setMessage(data.msg);
@@ -32,6 +38,8 @@ const ForgotPasswordvendor = () => {
             }
         } catch (error) {
             setMessage(error.response?.data?.msg || 'Error resetting password');
+        } finally {
+            setLoadingResetPassword(false);
         }
     };
 
@@ -52,7 +60,9 @@ const ForgotPasswordvendor = () => {
                                 aria-label="Vendor Email"
                             />
                         </div>
-                        <button type="submit" className="submit-button">Request OTP</button>
+                        <button type="submit" className="submit-button">
+                            {loadingRequestOTP ? "Requesting OTP..." : "Request OTP"}
+                        </button>
                     </form>
                 ) : (
                     <form onSubmit={handleResetPassword}>
@@ -78,7 +88,9 @@ const ForgotPasswordvendor = () => {
                                 aria-label="New Password"
                             />
                         </div>
-                        <button type="submit" className="submit-button">Reset Password</button>
+                        <button type="submit" className="submit-button">
+                            {loadingResetPassword ? "Reseting " : "Reset Password"}
+                        </button>
                     </form>
                 )}
                 {message && <p className="message">{message}</p>}

@@ -280,18 +280,7 @@ const VendorDashboard = () => {
         }, [vendor_email]);
 
         return (
-            <button style={{
-                padding: '10px 20px',
-                border: 'none',
-                borderRadius: '5px',
-                fontSize: '16px',
-                cursor: 'pointer',
-                transition: 'background-color 0.3s ease',
-                backgroundColor: isVerifiedButton ? '#28a745' : '#dc3545',
-                color: 'white'
-            }}>
-                {isVerifiedButton === null ? 'Loading...' : isVerifiedButton ? 'Verified' : 'Not Verified'}
-            </button>
+            <h1></h1>
         );
     };
 

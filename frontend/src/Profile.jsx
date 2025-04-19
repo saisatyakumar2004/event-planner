@@ -14,8 +14,11 @@ const Profile = () => {
     const [error, setError] = useState(null);
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [showEventDetails, setShowEventDetails] = useState(false);
+    const [cancelLoading, setCancelLoading] = useState({}); // New state for tracking cancel loading per order
 
     const handleCancelOrder = async (orderId) => {
+        // Set loading state for this order
+        setCancelLoading(prev => ({ ...prev, [orderId]: true }));
         try {
             // Make the API call to delete the order
             const response = await fetch(`http://localhost:5000/api/orders/deleteOrder/${orderId}`, {
@@ -37,6 +40,9 @@ const Profile = () => {
             }
         } catch (error) {
             console.error('Error cancelling the order:', error);
+        } finally {
+            // Reset loading state for this order regardless of outcome
+            setCancelLoading(prev => ({ ...prev, [orderId]: false }));
         }
     };
 
@@ -287,7 +293,7 @@ const Profile = () => {
                                                         className="cancelOrderButton"
                                                         onClick={() => handleCancelOrder(order.order_id)}
                                                     >
-                                                        Cancel Order
+                                                        {cancelLoading[order.order_id] ? 'Canceling Order..' : 'Cancel Order'}
                                                     </button>
                                                 </div>
                                             </div>
