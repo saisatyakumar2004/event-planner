@@ -11,7 +11,7 @@ const Venues = () => {
     // Fetch venue data from the backend API
     const fetchVenues = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/product/venues'); // Adjust API URL as necessary
+        const response = await axios.get('https://event-planner-ihsd.onrender.com/api/product/venues'); // Adjust API URL as necessary
         setVenues(response.data); // Set the fetched data to state
       } catch (error) {
         console.error('Error fetching venues:', error);

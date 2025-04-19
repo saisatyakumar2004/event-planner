@@ -132,7 +132,7 @@ const VendorRegister = () => {
     const sendOtp = async () => {
         setIsSendingOtp(true);
         try {
-            const response = await axios.post('http://localhost:5000/api/otp/generate', { email: vendor_email });
+            const response = await axios.post('https://event-planner-ihsd.onrender.com/api/otp/generate', { email: vendor_email });
             if (response.data.success) {
                 setIsOtpSent(true);
                 setMessage('OTP sent to your email address.');
@@ -150,7 +150,7 @@ const VendorRegister = () => {
     const verifyOtp = async () => {
         setIsVerifyingOtp(true);
         try {
-            const response = await axios.post('http://localhost:5000/api/otp/verify', { email: vendor_email, otp });
+            const response = await axios.post('https://event-planner-ihsd.onrender.com/api/otp/verify', { email: vendor_email, otp });
             if (response.data.success) {
                 setIsOtpVerified(true);
                 setMessage('OTP verified successfully! You can now complete the registration.');
@@ -173,7 +173,7 @@ const VendorRegister = () => {
         }
         setIsRegistering(true);
         try {
-            const response = await axios.post('http://localhost:5000/api/vendorauth/register', {
+            const response = await axios.post('https://event-planner-ihsd.onrender.com/api/vendorauth/register', {
                 vendor_email,
                 password,
                 name,

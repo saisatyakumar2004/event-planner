@@ -18,10 +18,10 @@ const ForgotPassword = () => {
         setIsLoading(true);
         try {
             // Check if the user exists
-            const userCheckResponse = await axios.post('http://localhost:5000/api/auth/check-user', { email });
+            const userCheckResponse = await axios.post('https://event-planner-ihsd.onrender.com/api/auth/check-user', { email });
             if (userCheckResponse.data.success) {
                 // If user exists, send OTP
-                const otpResponse = await axios.post('http://localhost:5000/api/otp/generate', { email });
+                const otpResponse = await axios.post('https://event-planner-ihsd.onrender.com/api/otp/generate', { email });
                 setMessage(otpResponse.data.msg);
                 setStep(2); // Move to OTP verification step
             } else {
@@ -39,7 +39,7 @@ const ForgotPassword = () => {
         e.preventDefault();
         setIsLoading(true);
         try {
-            const response = await axios.post('http://localhost:5000/api/otp/verify', { email, otp });
+            const response = await axios.post('https://event-planner-ihsd.onrender.com/api/otp/verify', { email, otp });
             setMessage(response.data.msg);
             setStep(3); // Move to new password step
         } catch (error) {
@@ -54,7 +54,7 @@ const ForgotPassword = () => {
         e.preventDefault();
         setIsLoading(true);
         try {
-            const response = await axios.post('http://localhost:5000/api/auth/reset-passworduser', { email, newPassword });
+            const response = await axios.post('https://event-planner-ihsd.onrender.com/api/auth/reset-passworduser', { email, newPassword });
             setMessage(response.data.msg);
             navigate('/login'); // Redirect to login page after successful password reset
         } catch (error) {

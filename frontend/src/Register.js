@@ -129,7 +129,7 @@ const Register = () => {
     const sendOtp = async () => {
         setIsSendingOtp(true);
         try {
-            const response = await axios.post('http://localhost:5000/api/otp/generate', { email });
+            const response = await axios.post('https://event-planner-ihsd.onrender.com/api/otp/generate', { email });
             if (response.data.success) {
                 setIsOtpSent(true);
                 setMessage('OTP sent to your email address.');
@@ -147,7 +147,7 @@ const Register = () => {
     const verifyOtp = async () => {
         setIsVerifyingOtp(true);
         try {
-            const response = await axios.post('http://localhost:5000/api/otp/verify', { email, otp });
+            const response = await axios.post('https://event-planner-ihsd.onrender.com/api/otp/verify', { email, otp });
             if (response.data.success) {
                 setIsOtpVerified(true);
                 setMessage('OTP verified successfully! Please complete the registration.');
@@ -177,7 +177,7 @@ const Register = () => {
             phoneNumber
         };
         try {
-            const response = await axios.post('http://localhost:5000/api/auth/register', requestBody);
+            const response = await axios.post('https://event-planner-ihsd.onrender.com/api/auth/register', requestBody);
             setMessage(response.data.message);
             setIsRegistered(true);
             navigate('/login');

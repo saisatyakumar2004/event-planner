@@ -54,7 +54,7 @@ const VendorDashboard = () => {
 
         try {
             // First check if vendor already has a product
-            const existingProducts = await axios.get(`http://localhost:5000/api/product/vendor-products/${vendor_email}`);
+            const existingProducts = await axios.get(`https://event-planner-ihsd.onrender.com/api/product/vendor-products/${vendor_email}`);
             
             if (existingProducts.data && existingProducts.data.length > 0) {
                 alert('You can only have one product. Please edit or remove your existing product.');
@@ -71,7 +71,7 @@ const VendorDashboard = () => {
                 image_url
             };
 
-            const response = await axios.post('http://localhost:5000/api/product/add', newProduct);
+            const response = await axios.post('https://event-planner-ihsd.onrender.com/api/product/add', newProduct);
             if (response.status === 201) {
                 alert('Product added successfully!');
                 setCategory('');
@@ -81,7 +81,7 @@ const VendorDashboard = () => {
                 setPrice(0);
                 setImageUrl('');
                 // Refresh products list
-                const updatedProducts = await axios.get(`http://localhost:5000/api/product/vendor-products/${vendor_email}`);
+                const updatedProducts = await axios.get(`https://event-planner-ihsd.onrender.com/api/product/vendor-products/${vendor_email}`);
                 setProducts(updatedProducts.data);
             } else {
                 alert('Failed to add product.');
@@ -107,7 +107,7 @@ const VendorDashboard = () => {
             try {
                 // Ensure vendor_email is available before making the request
                 if (userData.vendor_email) {
-                    const response = await axios.get(`http://localhost:5000/api/vendor?vendor_email=${userData.vendor_email}`);
+                    const response = await axios.get(`https://event-planner-ihsd.onrender.com/api/vendor?vendor_email=${userData.vendor_email}`);
                     const { name, vendor_email, phone, isVerified } = response.data;
                     setName(name);
                     setPhoneNumber(phone);
@@ -122,7 +122,7 @@ const VendorDashboard = () => {
 
         const fetchVendorProducts = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/api/product/vendor-products/${userData.vendor_email}`);
+                const response = await axios.get(`https://event-planner-ihsd.onrender.com/api/product/vendor-products/${userData.vendor_email}`);
                 setProducts(response.data);
             } catch (error) {
                 console.error('Error fetching products:', error);
@@ -135,7 +135,7 @@ const VendorDashboard = () => {
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/orders/fetchOrders');
+                const response = await axios.get('https://event-planner-ihsd.onrender.com/api/orders/fetchOrders');
                 const vendorOrders = response.data.filter(order => order.vendor_email === vendor_email);
                 setOrders(vendorOrders);
             } catch (error) {
@@ -151,7 +151,7 @@ const VendorDashboard = () => {
     const updateProfile = async () => {
         const updatedVendor = { name, vendor_email, phone, isVerified };
         try {
-            const response = await fetch('http://localhost:5000/api/vendor/updateProfile', {
+            const response = await fetch('https://event-planner-ihsd.onrender.com/api/vendor/updateProfile', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -183,7 +183,7 @@ const VendorDashboard = () => {
             return;
         }
 
-        const response = await fetch('http://localhost:5000/api/vendor/updatePassword', {
+        const response = await fetch('https://event-planner-ihsd.onrender.com/api/vendor/updatePassword', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -226,7 +226,7 @@ const VendorDashboard = () => {
     const handleRemoveProduct = async (productId) => {
         if (window.confirm('Are you sure you want to remove this product?')) {
             try {
-                await axios.delete(`http://localhost:5000/api/product/remove/${productId}`);
+                await axios.delete(`https://event-planner-ihsd.onrender.com/api/product/remove/${productId}`);
                 setProducts(products.filter(product => product.product_id !== productId));
                 alert('Product removed successfully!');
             } catch (error) {
@@ -243,7 +243,7 @@ const VendorDashboard = () => {
 
     const handleUpdateProduct = async () => {
         try {
-            await axios.put(`http://localhost:5000/api/product/update/${editingProduct.product_id}`, editingProduct);
+            await axios.put(`https://event-planner-ihsd.onrender.com/api/product/update/${editingProduct.product_id}`, editingProduct);
             setProducts(products.map(p => 
                 p.product_id === editingProduct.product_id ? editingProduct : p
             ));
@@ -263,7 +263,7 @@ const VendorDashboard = () => {
         useEffect(() => {
             const fetchVendorData = async () => {
                 try {
-                    const response = await fetch(`http://localhost:5000/api/vendor?vendor_email=${vendor_email}`);
+                    const response = await fetch(`https://event-planner-ihsd.onrender.com/api/vendor?vendor_email=${vendor_email}`);
                     const data = await response.json();
 
                     if (data) {

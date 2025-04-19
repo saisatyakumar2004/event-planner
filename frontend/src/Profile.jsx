@@ -21,7 +21,7 @@ const Profile = () => {
         setCancelLoading(prev => ({ ...prev, [orderId]: true }));
         try {
             // Make the API call to delete the order
-            const response = await fetch(`http://localhost:5000/api/orders/deleteOrder/${orderId}`, {
+            const response = await fetch(`https://event-planner-ihsd.onrender.com/api/orders/deleteOrder/${orderId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -66,11 +66,11 @@ const Profile = () => {
         const fetchUserData = async () => {
             try {
                 // First get user profile data
-                const userResponse = await axios.get(`http://localhost:5000/api/user?email=${userData.email}`);
+                const userResponse = await axios.get(`https://event-planner-ihsd.onrender.com/api/user?email=${userData.email}`);
                 
                 if (userResponse.data && userResponse.data.orderHistory?.length > 0) {
                     // Then fetch orders using the order IDs
-                    const ordersResponse = await axios.post('http://localhost:5000/api/orders/fetchOrdersByIds', {
+                    const ordersResponse = await axios.post('https://event-planner-ihsd.onrender.com/api/orders/fetchOrdersByIds', {
                         orderIds: userResponse.data.orderHistory
                     });
                     
@@ -95,7 +95,7 @@ const Profile = () => {
     const updateProfile = async () => {
         const updatedUser = { firstName, lastName, email, phoneNumber };
         try {
-            const response = await fetch('http://localhost:5000/api/user/updateProfile', {
+            const response = await fetch('https://event-planner-ihsd.onrender.com/api/user/updateProfile', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -127,7 +127,7 @@ const Profile = () => {
             return;
         }
 
-        const response = await fetch('http://localhost:5000/api/user/updatePassword', {
+        const response = await fetch('https://event-planner-ihsd.onrender.com/api/user/updatePassword', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

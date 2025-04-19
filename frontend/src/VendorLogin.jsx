@@ -14,7 +14,7 @@ const VendorLogin = () => {
         e.preventDefault();
         setIsLoading(true); // start loading
         try {
-            const { data } = await axios.post('http://localhost:5000/api/vendorauth/login', {
+            const { data } = await axios.post('https://event-planner-ihsd.onrender.com/api/vendorauth/login', {
                 vendor_email,
                 password,
             });

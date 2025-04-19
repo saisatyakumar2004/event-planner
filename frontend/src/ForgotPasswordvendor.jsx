@@ -17,7 +17,7 @@ const ForgotPasswordvendor = () => {
         e.preventDefault();
         setLoadingRequestOTP(true);
         try {
-            const { data } = await axios.post('http://localhost:5000/api/vendorauth/forgot-passwordvendor', { vendor_email });
+            const { data } = await axios.post('https://event-planner-ihsd.onrender.com/api/vendorauth/forgot-passwordvendor', { vendor_email });
             setMessage(data.msg);
             setStep(2);
         } catch (error) {
@@ -31,7 +31,7 @@ const ForgotPasswordvendor = () => {
         e.preventDefault();
         setLoadingResetPassword(true);
         try {
-            const { data } = await axios.post('http://localhost:5000/api/vendorauth/reset-password', { vendor_email, otp, newPassword });
+            const { data } = await axios.post('https://event-planner-ihsd.onrender.com/api/vendorauth/reset-password', { vendor_email, otp, newPassword });
             setMessage(data.msg);
             if (data.msg === 'Password reset successfully') {
                 navigate('/vendor-login');

@@ -13,7 +13,7 @@ const Login = () => {
         e.preventDefault();
         setIsLoading(true);
         try {
-            const response = await axios.post('http://localhost:5000/api/auth/login', {
+            const response = await axios.post('https://event-planner-ihsd.onrender.com/api/auth/login', {
                 email,
                 password,
             });

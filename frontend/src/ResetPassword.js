@@ -14,7 +14,7 @@ const ResetPassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/otp/resetpassword', {
+      const response = await axios.post('https://event-planner-ihsd.onrender.com/api/otp/resetpassword', {
         email,
         otp,
         newPassword,

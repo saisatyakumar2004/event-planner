@@ -39,7 +39,7 @@ const VendorDetail = () => {
     try {
       if (!vendor) throw new Error('Vendor information not available');
 
-      const response = await fetch('http://localhost:5000/api/orders/check-venue-availability', {
+      const response = await fetch('https://event-planner-ihsd.onrender.com/api/orders/check-venue-availability', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -69,7 +69,7 @@ const VendorDetail = () => {
       const vendorId = vendor.product_id || vendor.title;
 
       const response = await fetch(
-        `http://localhost:5000/api/orders/venue-booked-dates/${encodeURIComponent(vendorId)}`
+        `https://event-planner-ihsd.onrender.com/api/orders/venue-booked-dates/${encodeURIComponent(vendorId)}`
       );
 
       if (!response.ok) {
@@ -91,7 +91,7 @@ const VendorDetail = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/product/products');
+        const response = await fetch('https://event-planner-ihsd.onrender.com/api/product/products');
         const data = await response.json();
         
         let vendorData = [];
@@ -117,7 +117,7 @@ const VendorDetail = () => {
         setVendor(foundVendor);
 
         if (foundVendor) {
-          const reviewsResponse = await fetch(`http://localhost:5000/api/reviews/${id}`);
+          const reviewsResponse = await fetch(`https://event-planner-ihsd.onrender.com/api/reviews/${id}`);
           if (reviewsResponse.ok) {
             const reviewsData = await reviewsResponse.json();
             setReviews(reviewsData.reviews || []);
@@ -183,7 +183,7 @@ const VendorDetail = () => {
                          `${user.firstName} ${user.lastName}` : 
                          user.email); // Use full email address directly
 
-      const response = await fetch('http://localhost:5000/api/reviews/add', {
+      const response = await fetch('https://event-planner-ihsd.onrender.com/api/reviews/add', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -242,7 +242,7 @@ const VendorDetail = () => {
 
   const sendBookingConfirmationEmail = async (vendorEmail, eventDetails, vendor, client) => {
     try {
-      const response = await fetch('http://localhost:5000/api/otp/send-booking-confirmation', {
+      const response = await fetch('https://event-planner-ihsd.onrender.com/api/otp/send-booking-confirmation', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -297,7 +297,7 @@ const VendorDetail = () => {
 
     try {
       setIsSubmitting(true);
-      const response = await fetch('http://localhost:5000/api/orders/addOrder', {
+      const response = await fetch('https://event-planner-ihsd.onrender.com/api/orders/addOrder', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

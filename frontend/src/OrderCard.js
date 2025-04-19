@@ -12,7 +12,7 @@ const OrderCard = ({ order }) => {
   const acceptOrder = async () => {
     setIsAccepting(true);
     try {
-      const response = await axios.put(`http://localhost:5000/api/order-vendor/accept/${order.order_id}`);
+      const response = await axios.put(`https://event-planner-ihsd.onrender.com/api/order-vendor/accept/${order.order_id}`);
       if (response.status === 200) {
         setIsAccepted(true); // Update local state
         alert('Order Accepted Successfully!');
@@ -32,7 +32,7 @@ const OrderCard = ({ order }) => {
   const rejectOrder = async () => {
     setIsRejecting(true);
     try {
-      const response = await axios.put(`http://localhost:5000/api/order-vendor/reject/${order.order_id}`, {
+      const response = await axios.put(`https://event-planner-ihsd.onrender.com/api/order-vendor/reject/${order.order_id}`, {
         rejected: true, // Send rejected status to the backend
       });
       if (response.status === 200) {
